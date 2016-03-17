@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
 from scapy.all import *
-from datetime import datetime
-import sys
-import time
+#from datetime import datetime
+#import sys
+#import time
 
 found = {}
 apPresent = {}
 
 def sniffmgmt(p):
-	stamgmtstypes = (0, 2, 4)
+	#stamgmtstypes = (0, 2, 4)
 	
 	DS = p.FCfield & 0x3
         to_DS = DS & 0x1 != 0
