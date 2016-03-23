@@ -1,15 +1,12 @@
 #!/usr/bin/python
 
 from scapy.all import *
-#from datetime import datetime
-#import sys
-#import time
+import argparse
 
 found = {}
 apPresent = {}
 
 def sniffmgmt(p):
-	#stamgmtstypes = (0, 2, 4)
 	
 	DS = p.FCfield & 0x3
         to_DS = DS & 0x1 != 0
@@ -42,23 +39,28 @@ def sniffmgmt(p):
                         print "MAC_AP: " + key + " ----->  MAC_CLIENT:  " + p.addr2
 
 
-if len(sys.argv) < 2:
-	print("usage: sniff.py <iface>")
-	sys.exit(-1)
+if __name__ == "__main__":
+        if len(sys.argv) < 2:
+            print("usage: sniff.py <iface>")
+            sys.exit(-1)
+        
+        parser = argparse.ArgumentParser(description='aircommand.py - Utilize many wireless security features using the Scapy python module')
+        parser.add_argument('-i', '--interface', dest='interface', type=str, required=True, help='Interface to use for sniffing and packet injection')
+        args = parser.parse_args()
+        print 'Press CTRL+c to stop sniffing..'
+    
+        #def s():
+        sniff(iface=args.interface, prn=sniffmgmt)
 
-sniff(iface=sys.argv[1], prn=sniffmgmt)
+        print "\nNUM AP: ", len(apPresent),"\n"
 
+        for key in apPresent:
+            print "\nMAC_AP: "+key
+            print "MAC_CLIENT:"
+            for k in apPresent[key]:
+                print k
 
-
-print "\nNUM AP: ", len(apPresent),"\n"
-
-for key in apPresent:
-    print "\nMAC_AP: "+key
-    print "MAC_CLIENT:"
-    for k in apPresent[key]:
-        print k
-
-print "\n\n"
-for key in apPresent:
-    print "NUM CLIENT CONNECT IN AP: "+ key + " ", len(apPresent[key])
+        print "\n\n"
+        for key in apPresent:
+            print "NUM CLIENT CONNECT IN AP: "+ key + " ", len(apPresent[key])
 
