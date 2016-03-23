@@ -44,7 +44,7 @@ if __name__ == "__main__":
             print("usage: sniff.py <iface>")
             sys.exit(-1)
         
-        parser = argparse.ArgumentParser(description='aircommand.py - Utilize many wireless security features using the Scapy python module')
+        parser = argparse.ArgumentParser(description='APMonitoring.py')
         parser.add_argument('-i', '--interface', dest='interface', type=str, required=True, help='Interface to use for sniffing and packet injection')
         args = parser.parse_args()
         print 'Press CTRL+c to stop sniffing..'
