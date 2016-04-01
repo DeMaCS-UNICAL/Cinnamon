@@ -4,6 +4,7 @@ from scapy.all import *
 import argparse
 
 import interfaceScript
+import subprocess
 
 apPresent = {}
 
@@ -18,11 +19,19 @@ if __name__ == "__main__":
     #networks = {}
     #stop_sniff = False
     print 'Press CTRL+c to stop sniffing..'
-    print '='*150 + '\n{0:20}\t{1:30}\t{2:20}\t{3:1}\t{4:1}\t{5:1}\t{6:1}\n'.format('ESSID','BSSID','STATION', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ') + '='*150
+    #print '='*150 + '\n{0:20}\t{1:30}\t{2:20}\t{3:1}\t{4:1}\t{5:1}\t{6:1}\t{7:1}\t{8:1}\t{9:1}\n'.format('ESSID','BSSID','STATION', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ','HAND_SUCC','HAND_FAIL','CORRUPT') + '='*150
     
+    #if args.channel != None:
+        #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
+        #subprocess.call("ifconfig -a", shell=True)
+        #subprocess.call("iwconfig "+ args.interface +" channel "+ args.channel, shell=True)
+        #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+        
     #def s():
+    interfaceScript.createTable('ESSID              ','BSSID            ','STATION          ', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ','HAND_SUCC','HAND_FAIL','CORRUPT')
     sniff(iface=args.interface, prn=interfaceScript.sniffmgmt)
-
+    
+    
     #print "\nNUM AP: ", len(apPresent),"\n"
 
     #for key in apPresent:
