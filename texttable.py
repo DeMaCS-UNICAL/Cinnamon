@@ -178,7 +178,7 @@ class Texttable:
 
         self._hline_string = None
         self._row_size = None
-        self._header = []
+        #self._header = []
         self._rows = []
 
     def set_chars(self, array):
