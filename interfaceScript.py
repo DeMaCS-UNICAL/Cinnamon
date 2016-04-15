@@ -209,7 +209,7 @@ class SniffPackage:
                 #self.checkEssid(p.addr1, p.addr2)
             elif from_DS and not to_DS:
                 #print "SECOND ", p.addr3, " ", p.addr1
-                if p.addr2 in apPresent and p.addr1 in apPresent[p.addr2]:
+                #if p.addr2 in apPresent and p.addr1 in apPresent[p.addr2]:
                     
                 self.createArray(p.addr3,p.addr1)
                 self.numPack[p.addr3,p.addr1] += 1   
