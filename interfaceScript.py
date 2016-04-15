@@ -44,9 +44,11 @@ class SniffPackage:
 
 
     def createArray(self,macAP, macClient):
-        if macAP not in self.apPresent:
-            self.apPresent[macAP] = []
-            self.apPresent[macAP].append(macClient)
+        if macAP != None and macClient != None and macClient not in self.apPresent:
+        #if macClient not in self.apPresent:
+            if macAP not in self.apPresent:
+                self.apPresent[macAP] = []
+                self.apPresent[macAP].append(macClient)
         
         if (macAP,macClient) not in self.deauthent:
             self.deauthent[(macAP,macClient)] = 0
@@ -104,6 +106,7 @@ class SniffPackage:
             if p.Flags & 64 != 0:
                 if not from_DS and to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
+                        #print "FIRST: ",p.addr1, " ", p.addr2
                         if p.addr1 != None and p.addr2 != None:
                             self.createArray(p.addr1,p.addr2)
                             self.corruptedPack[(p.addr1,p.addr2)] += 1
@@ -118,13 +121,16 @@ class SniffPackage:
                                     #self.printInfo("",p.addr1,p.addr2)
                 elif from_DS and not to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
+                        #print "SECOND: ----------",p.addr2, " ", p.addr1
                         if p.addr1 != None and p.addr2 != None:
                             self.createArray(p.addr2,p.addr1)
                             self.corruptedPack[(p.addr2,p.addr1)] += 1
                             self.numPack[(p.addr2,p.addr1)] += 1
                             if hasattr(p, 'info'):
-                                self.printInfo(p.info,p.addr2,p.addr1)
-                            
+                                if p.info != "":
+                                    self.printInfo(p.info,p.addr2,p.addr1)
+                                else:
+                                    self.checkEssid(p.addr2, p.addr1)
                             else:
                                 self.checkEssid(p.addr2, p.addr1)
                                 #if p.addr2 in self.essid:
@@ -133,15 +139,24 @@ class SniffPackage:
                                     #self.printInfo("",p.addr2,p.addr1)
                 elif not from_DS and not to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
+                        #print "THIRD: ----------",p.addr1, " ", p.addr2
                         if p.addr1 != None and p.addr2 != None:
-                            self.createArray(p.addr2,p.addr1)
-                            self.corruptedPack[(p.addr2,p.addr1)] += 1
-                            self.numPack[(p.addr2,p.addr1)] += 1
-                            if hasattr(p, 'info'):
-                                self.printInfo(p.info,p.addr2,p.addr1)
-                            
+                            if p.addr1 in self.apPresent:
+                                macAP = p.addr1
+                                macClient = p.addr2
                             else:
-                                self.checkEssid(p.addr2, p.addr1)
+                                macAP = p.addr2
+                                macClient = p.addr1
+                            self.createArray(macAP, macClient)
+                            self.corruptedPack[(macAP, macClient)] += 1
+                            self.numPack[(macAP, macClient)] += 1
+                            if hasattr(p, 'info'):
+                                if p.info != "":
+                                    self.printInfo(p.info,macAP, macClient)
+                                else:
+                                    self.checkEssid(macAP, macClient)
+                            else:
+                                self.checkEssid(macAP, macClient)
                                 #if p.addr2 in self.essid:
                                     #self.printInfo(self.essid[p.addr2],p.addr2,p.addr1)
                                 #else:
@@ -157,7 +172,7 @@ class SniffPackage:
         if macAP in self.essid:
             self.printInfo(self.essid[macAP], macAP, macClient)
         else:
-            self.printInfo("", macAP, macClient)
+            self.printInfo("-", macAP, macClient)
 
     def sniffmgmt(self,p):
         #p.show()
@@ -180,17 +195,25 @@ class SniffPackage:
         
         
         isCorrupted = self.checkFCS(p, from_DS, to_DS)
+        if isCorrupted:
+            return
         #isCorrupted = False
-        if not isCorrupted:
+        elif not isCorrupted:
             activeAp = 0
             if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                self.createArray(p.addr1,p.addr2)
-                self.numPack[p.addr1,p.addr2] += 1
-                self.checkEssid(p.addr1, p.addr2)
+                #print self.apPresent
+                if p.addr1 not in self.apPresent and p.addr2 != None:
+                    #print "FIRST ", p.addr1, " ", p.addr2
+                    self.createArray(p.addr1,p.addr2)
+                    self.numPack[p.addr1,p.addr2] += 1
+                #self.checkEssid(p.addr1, p.addr2)
             elif from_DS and not to_DS:
+                #print "SECOND ", p.addr3, " ", p.addr1
+                if p.addr2 in apPresent and p.addr1 in apPresent[p.addr2]:
+                    
                 self.createArray(p.addr3,p.addr1)
                 self.numPack[p.addr3,p.addr1] += 1   
-                self.checkEssid(p.addr3, p.addr1)
+                #self.checkEssid(p.addr3, p.addr1)
             #p.show()
             
             if p.haslayer(Dot11) and hasattr(p, 'info'):
@@ -260,15 +283,16 @@ class SniffPackage:
             
             if hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 8:   #BEACON
                 #p.show()
-                self.cont += 1
+                #self.cont += 1
+                #print p.addr1, " ", p.addr2, " ", p.addr3, " ----> ", from_DS, " ", to_DS
                 if (not from_DS and to_DS) or (not from_DS and not to_DS):
                     self.createArray(p.addr1,p.addr2)
                     self.beaconList[p.addr1,p.addr2] += 1
                     self.checkEssid(p.addr1, p.addr2)
                 elif from_DS and not to_DS:
-                    self.createArray(p.addr3,p.addr1)
-                    self.beaconList[p.addr3,p.addr1] += 1   
-                    self.checkEssid(p.addr3, p.addr1)
+                    self.createArray(p.addr2,p.addr1)
+                    self.beaconList[p.addr2,p.addr1] += 1   
+                    self.checkEssid(p.addr2, p.addr1)
                 return
             if hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 0:   #DATA
                 #p.show()
@@ -284,9 +308,15 @@ class SniffPackage:
                     
             if hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 11:   #RTS
                 if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    self.createArray(p.addr1,p.addr2)
-                    self.rtsList[p.addr1,p.addr2] += 1   
-                    self.checkEssid(p.addr1, p.addr2)
+                    if p.addr1 in self.apPresent:
+                        macAP = p.addr1
+                        macClient = p.addr2
+                    else:
+                        macAP = p.addr2
+                        macClient = p.addr1
+                    self.createArray(macAP, macClient)
+                    self.rtsList[macAP, macClient] += 1   
+                    self.checkEssid(macAP, macClient)
                     #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
                 elif from_DS and not to_DS:
                     self.createArray(p.addr3,p.addr1)
@@ -325,28 +355,44 @@ class SniffPackage:
             
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 11:   #AUTH
                 #p.show()
-                self.createArray(p.addr1,p.addr2)
+                if p.addr1 in self.apPresent:
+                    macAP = p.addr1
+                    macClient = p.addr2
+                    #print "IIIIIIIIN -------------------------------------------------------------------- ", macAP, " ", macClient
+                else:
+                    macAP = p.addr2
+                    macClient = p.addr1
+                    #print "NOOOOOOOOOOOOT -------------------------------------------------------------------- ", macAP, " ", macClient
+                    
+                self.createArray(macAP, macClient)
                 #if p.addr1 in apPresent:
                     #if p.addr2 not in apPresent[p.addr1]:
                         #apPresent[p.addr1].append(p.addr2);
                 
-                self.authent[p.addr1,p.addr2] += 1 
-                self.checkFrequence(p.addr1,p.addr2,p.dBm_AntSignal)
-                self.checkEssid(p.addr1, p.addr2)
+                self.authent[macAP, macClient] += 1 
+                self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
+                self.checkEssid(macAP, macClient)
                 #printInfo(essid[p.addr1],p.addr1,p.addr2)
                 return
                 #return
                     
             if hasattr(p, 'type') and hasattr(p, 'subtype') and p.type == 0 and p.subtype == 12:   #DEAUTH
-                self.createArray(p.addr1, p.addr2)
+                #p.show()
                 if p.addr1 in self.apPresent:
-                    if p.addr2 in self.apPresent[p.addr1]:
-                        self.apPresent[p.addr1].remove(p.addr2);
+                    macAP = p.addr1
+                    macClient = p.addr2
+                else:
+                    macAP = p.addr2
+                    macClient = p.addr1
+                self.createArray(macAP, macClient)
+                if macAP in self.apPresent:
+                    if macClient in self.apPresent[macAP]:
+                        self.apPresent[macAP].remove(macClient);
                         
-                    self.deauthent[p.addr1,p.addr2] += 1
-                    self.checkFrequence(p.addr1,p.addr2,p.dBm_AntSignal)
+                    self.deauthent[macAP, macClient] += 1
+                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
                     #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                    self.checkEssid(p.addr1, p.addr2)
+                    self.checkEssid(macAP, macClient)
                 return
                     
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 4:   #PROBE_REQ
