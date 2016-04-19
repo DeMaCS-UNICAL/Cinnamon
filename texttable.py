@@ -170,6 +170,9 @@ class Texttable:
         self.set_chars(['-', '|', '+', '='])
         self.reset()
 
+    def __iter__(self):
+        return iter(self._rows)
+
     def reset(self):
         """Reset the instance
 

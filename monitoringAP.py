@@ -2,8 +2,8 @@
 
 import scapy
 from scapy.all import *
-import argparse, sys
-
+import argparse, sys, thread, time
+from time import sleep
 import printerInfo
 import detachPack
 import subprocess
@@ -20,6 +20,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='APMonitoring.py')
     parser.add_argument('-i', '--interface', dest='interface', type=str, required=False, help='Interface to use for sniffing')
     parser.add_argument('-f', '--file', dest='file', type=str, required=False, help='File to read for sniffing')
+    #parser.add_argument('-r', '--read', action='store_true', help='File to read for sniffing after execute -i command')
     #parser.add_argument('-s', '--snifferFile', dest='snifferFile', type=str, required=False, help='File to read for sniffing')
     parser.add_argument('-b', '--bssid', dest='bssid', type=str, required=False, help='Bssid to set')
     parser.add_argument('-c', '--channel', dest='channel', type=str, required=False, help='Channel to set')
@@ -27,24 +28,51 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print 'Press CTRL+c to stop sniffing...'
     #print '='*150 + '\n{0:20}\t{1:30}\t{2:20}\t{3:1}\t{4:1}\t{5:1}\t{6:1}\t{7:1}\t{8:1}\t{9:1}\n'.format('ESSID','BSSID','STATION', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ','HAND_SUCC','HAND_FAIL','CORRUPT') + '='*150
-    
+    filterStr = ""
     if args.channel != None:
-        subprocess.call("ifconfig "+ args.interface +" down", shell=True)
+        #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
         #subprocess.call("ifconfig -a", shell=True)
         subprocess.call("iwconfig "+ args.interface +" channel "+ args.channel, shell=True)
-        subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+        #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+    
+    if args.bssid != None:
+        filterStr = "wlan src "+args.bssid+" or wlan dst "+args.bssid
         
     #def s():
-    #sniffFile = fileScript.SniffFile()
-    
 
+    #if args.read == True:
+        #import interfaceScript
+        ##index = 0
+        #a = sys.stdin.readline()
+        ##print a
+        ##print len(a)
+        ##b = a[len(a)-1].rstrip
+        #b = a.rstrip()
+        #path = "/home/eliana/Dropbox/Tesi/APMonitoring/MonitoringAP[PROVA2]/"+b
+        ##path.rstrip()
+        #print path
+        #print b
+        #printerInfo = printerInfo.PrinterInfo(1, "Thread1", 2)
+        ##printerInfo.start()
+        #sniffPack = interfaceScript.SniffPackage(printerInfo)
+        #sniff(offline=path, prn=sniffPack.sniffmgmt)
+        ##thread.start_new_thread(sniff(offline=b, prn=sniffPack.sniffmgmt), ())
+        
     if args.file != None:
         import interfaceScript
         #index = 0
         printerInfo = printerInfo.PrinterInfo(1, "Thread1", 2)
         printerInfo.start()
         sniffPack = interfaceScript.SniffPackage(printerInfo)
-
+        #logfile = open(args.file, 'r')
+        #loglist = logfile.readlines()
+        #print args.file
+        #print logfile
+        #if len(loglist) == 0:
+            #print "TTTT"
+        #else:
+            #print "YYYYYY"
+        #sleep(1)
         sniff(offline=args.file, prn=sniffPack.sniffmgmt)
 
     if args.interface != None:
@@ -65,14 +93,22 @@ if __name__ == "__main__":
 
         if args.save == True:
             detachPack = detachPack.DetachPack()
+            #subprocess.call("./monitoringAP.py -f "+detachPack.getFilename(), shell=True)
             sniff(iface=args.interface, prn=detachPack.detach)
+            
+            #thread.start_new_thread(sniff(iface=args.interface, prn=detachPack.detach), ())
+            
         else:
             import interfaceScript
             printerInfo = printerInfo.PrinterInfo(1, "Thread2", 2)
             printerInfo.start()
             sniffPack = interfaceScript.SniffPackage(printerInfo)
             
-            sniff(iface=args.interface, prn=sniffPack.sniffmgmt)
+            if filterStr != "":
+                sniff(filter=filterStr, iface=args.interface, prn=sniffPack.sniffmgmt)
+            else:
+                sniff(iface=args.interface, prn=sniffPack.sniffmgmt)
+            #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
     
     #print "\nNUM AP: ", len(apPresent),"\n"
 

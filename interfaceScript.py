@@ -84,7 +84,6 @@ class SniffPackage:
 
     def printInfo(self,essid,macAP,macClient):
         if macAP != None and macClient != None:
-            #print essid
             if (essid,macClient) not in self.probeRequest:
                 self.probeRequest[(essid,macClient)] = 0
             
@@ -96,7 +95,7 @@ class SniffPackage:
             
             strPercentage = str(percentCorr)+"%"
             
-            i = tuple([essid, macAP, macClient, self.probeRequest[(essid,macClient)], self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP,macClient)], self.beaconList[(macAP,macClient)], self.numPack[(macAP,macClient)]])
+            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP,macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.numPack[(macAP,macClient)]])
             self.printerInfo.addInfo(i)
         
 
@@ -174,6 +173,8 @@ class SniffPackage:
         else:
             self.printInfo("-", macAP, macClient)
 
+
+
     def sniffmgmt(self,p):
         #p.show()
         #print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -202,15 +203,23 @@ class SniffPackage:
             activeAp = 0
             if (not from_DS and to_DS) or (not from_DS and not to_DS):
                 #print self.apPresent
-                if p.addr1 not in self.apPresent and p.addr2 != None:
+                if p.addr1 in self.apPresent:
+                    macAP = p.addr1
+                    macClient = p.addr2
+                else:
+                    macAP = p.addr2
+                    macClient = p.addr1
+                #if p.addr1 not in self.apPresent and p.addr2 != None:
                     #print "FIRST ", p.addr1, " ", p.addr2
-                    self.createArray(p.addr1,p.addr2)
-                    self.numPack[p.addr1,p.addr2] += 1
+                self.createArray(macAP,macClient)
+                self.numPack[macAP,macClient] += 1
                 #self.checkEssid(p.addr1, p.addr2)
             elif from_DS and not to_DS:
                 #print "SECOND ", p.addr3, " ", p.addr1
                 #if p.addr2 in apPresent and p.addr1 in apPresent[p.addr2]:
-                    
+                    #self.createArray(p.addr2,p.addr1)
+                    #self.numPack[p.addr2,p.addr1] += 1   
+                #else:
                 self.createArray(p.addr3,p.addr1)
                 self.numPack[p.addr3,p.addr1] += 1   
                 #self.checkEssid(p.addr3, p.addr1)
@@ -337,7 +346,6 @@ class SniffPackage:
                 return
                     #self.printInfo(self.essid[p.addr3],p.addr3,p.addr1)
             if hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 13:   #ACK
-                #p.show()
                 if (not from_DS and to_DS) or (not from_DS and not to_DS):
                     self.createArray(p.addr1,p.addr2)
                     self.ackList[p.addr1,p.addr2] += 1   
@@ -397,11 +405,15 @@ class SniffPackage:
                     
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 4:   #PROBE_REQ
                 self.createArray(p.addr1,p.addr2)
+                #if p.info == "":
+                    #p.info = "-"
+                if p.addr1 in self.essid:
+                    p.info = self.essid[p.addr1]
                 if (p.info,p.addr2) not in self.probeRequest:
                     self.probeRequest[(p.info,p.addr2)] = 0
                 self.probeRequest[(p.info,p.addr2)] += 1
                 self.checkFrequence(p.addr1,p.addr2,p.dBm_AntSignal)
-                
+                #self.enter = True
                 self.checkEssid(p.addr1, p.addr2)
                 
                 #self.printInfo(p.info,p.addr1,p.addr2)

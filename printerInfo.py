@@ -18,7 +18,7 @@ class PrinterInfo (threading.Thread):
         self.tableOrd = texttable.Texttable()
         self.info = {}
         self.index = 0
-        self.createTable('ESSID                 ','BSSID            ','STATION          ', 'PROBE_REQ', 'AUTH','DEAUTH', 'PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR %','DATA','RTS','CTS','ACK','BEACON','TOT_PACK', bcolors.BLUE)
+        self.createTable('ESSID                 ','BSSID            ','STATION          ', 'AUTH','DEAUTH', 'PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR %','DATA','RTS','CTS','ACK','BEACON', 'PROBE_REQ', 'TOT_PACK', bcolors.BLUE)
         #self.createTable('ESSID','BSSID','STATION', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ','HAND_SUCC','HAND_FAIL','CORRUPT', bcolors.BLUE)
         self.essid = {}
         self.threadID = threadID
@@ -113,7 +113,7 @@ class PrinterInfo (threading.Thread):
     def printInformation(self):
         self.table.reset()
         self.tableOrd.reset()
-        self.createTable('ESSID                 ','BSSID            ','STATION          ','PROBE_REQ','AUTH','DEAUTH','PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR %','DATA','RTS','CTS','ACK','BEACON','TOT_PACK', bcolors.BLUE)
+        self.createTable('ESSID                 ','BSSID            ','STATION          ', 'AUTH','DEAUTH','PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR %','DATA','RTS','CTS','ACK','BEACON', 'PROBE_REQ', 'TOT_PACK', bcolors.BLUE)
         #self.createTable('ESSID','BSSID','STATION', 'PROBE_REQ', 'AUTH','DEAUTH', 'FREQ','HAND_SUCC','HAND_FAIL','CORRUPT', bcolors.BLUE)
         #sorted(self.info)
         
