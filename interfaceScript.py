@@ -3,9 +3,32 @@ import scapy_ex
 import os,sys, socket
 import printerInfo
 
+import enum
+from enum import Enum
+
 from scapy.layers.dot11 import Dot11
 from scapy.all import *
 #from time import sleep
+
+
+class Message(Enum):
+    AUTH = "0"
+    DEAUTH = "1"
+
+    PROBE_REQ = "2"
+    
+    HAND_SUCC = "3"
+    HAND_FAIL = "4"
+    
+    CORR_PACK = "5"
+    RTS = "6"
+
+    CTS = "7"
+    ACK = "8"
+
+    DATA = "9"
+    BEACON = "10"
+    NUM_PACK = "11"
 
 
 class SniffPackage:
@@ -22,23 +45,57 @@ class SniffPackage:
         self.index = 0
 
         self.frequence = {}
+        
         self.authent = {}
+        self.authentAP = {}
+        self.authentClient = {}
+        
         self.deauthent = {}
+        self.deauthentAP = {}
+        self.deauthentClient = {}
+        
         self.probeRequest = {}
+        self.probeRequestAP = {}
+        self.probeRequestClient = {}
+        
         self.eapHandshakeSuccess = {}
+        self.eapHandshakeSuccessAP = {}
+        self.eapHandshakeSuccessClient = {}
+        
         self.eapHandshakeFailed = {}
+        self.eapHandshakeFailedAP = {}
+        self.eapHandshakeFailedClient = {}
+        
         self.corruptedPack = {}
+        self.corruptedPackAP = {}
+        self.corruptedPackClient = {}
 
         self.eapRequest = {}
         
         self.rtsList = {}
+        self.rtsListAP = {}
+        self.rtsListClient = {}
+        
         self.ctsList = {}
+        self.ctsListAP = {}
+        self.ctsListClient = {}
+        
         self.dataList = {}
+        self.dataListAP = {}
+        self.dataListClient = {}
+        
         self.ackList = {}
+        self.ackListAP = {}
+        self.ackListClient = {}
         
         self.beaconList = {}
+        self.beaconAP = {}
+        self.beaconClient = {}
         
         self.numPack = {}
+        self.numPackAP = {}
+        self.numPackClient = {}
+        
         self.cont = 0
         self.printerInfo = printerInfo
 
@@ -74,8 +131,66 @@ class SniffPackage:
             self.ackList[(macAP,macClient)] = 0
         if (macAP,macClient) not in self.beaconList:
             self.beaconList[(macAP,macClient)] = 0
+        if macClient not in self.ackList:
+            self.ackList[macClient] = 0
         
-        
+    
+    def createArrayAP(self, macAP):
+        if macAP not in self.apPresent:
+            self.apPresent[macAP] = []
+                
+        if macAP not in self.beaconAP:
+            self.beaconAP[macAP] = 0
+        if macAP not in self.numPackAP:
+            self.numPackAP[macAP] = 0
+        if macAP not in self.authentAP:
+            self.authentAP[macAP] = 0
+        if macAP not in self.deauthentAP:
+            self.deauthentAP[macAP] = 0
+        if macAP not in self.probeRequestAP:
+            self.probeRequestAP[macAP] = 0
+        if macAP not in self.eapHandshakeSuccessAP:
+            self.eapHandshakeSuccessAP[macAP] = 0
+        if macAP not in self.eapHandshakeFailedAP:
+            self.eapHandshakeFailedAP[macAP] = 0
+        if macAP not in self.corruptedPackAP:
+            self.corruptedPackAP[macAP] = 0
+        if macAP not in self.rtsListAP:
+            self.rtsListAP[macAP] = 0
+        if macAP not in self.ctsListAP:
+            self.ctsListAP[macAP] = 0
+        if macAP not in self.dataListAP:
+            self.dataListAP[macAP] = 0
+        if macAP not in self.ackListAP:
+            self.ackListAP[macAP] = 0
+            
+    def createArrayClient(self, macClient):
+        if macClient not in self.beaconClient:
+            self.beaconClient[macClient] = 0
+        if macClient not in self.numPackClient:
+            self.numPackClient[macClient] = 0
+        if macClient not in self.authentClient:
+            self.authentClient[macClient] = 0
+        if macClient not in self.deauthentClient:
+            self.deauthentClient[macClient] = 0
+        if macClient not in self.probeRequestClient:
+            self.probeRequestClient[macClient] = 0
+        if macClient not in self.eapHandshakeSuccessClient:
+            self.eapHandshakeSuccessClient[macClient] = 0
+        if macClient not in self.eapHandshakeFailedClient:
+            self.eapHandshakeFailedClient[macClient] = 0
+        if macClient not in self.corruptedPackClient:
+            self.corruptedPackClient[macClient] = 0
+        if macClient not in self.rtsListClient:
+            self.rtsListClient[macClient] = 0
+        if macClient not in self.ctsListClient:
+            self.ctsListClient[macClient] = 0
+        if macClient not in self.dataListClient:
+            self.dataListClient[macClient] = 0
+        if macClient not in self.ackListClient:
+            self.ackListClient[macClient] = 0
+    
+    
 
     def checkFrequence(self,macAP, macClient,freq):
         if freq != 0 and freq != None:
@@ -95,9 +210,59 @@ class SniffPackage:
             
             strPercentage = str(percentCorr)+"%"
             
-            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP,macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.numPack[(macAP,macClient)]])
+            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.numPack[(macAP,macClient)]])
             self.printerInfo.addInfo(i)
+    
+    
+    def printInfoAP(self, essid, macAP, macClient):
+        if macAP != None and macAP != SniffPackage.BROADCAST_ADDR and macClient != None:
+            if (macAP) not in self.probeRequestAP:
+                self.probeRequestAP[macAP] = 0
+            
+            
+            #percentCorr = float(float(self.corruptedPack[(macAP,macClient)])/100)
+            percentCorr = 0
+            if self.numPackAP[macAP] != 0:
+                percentCorr = int(float(self.corruptedPackAP[macAP])/float(self.numPackAP[macAP])*100)
+            
+            strPercentage = str(percentCorr)+"%"
+            
+            i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.numPackAP[macAP]])
+            self.printerInfo.addInfoAP(i)
+            
+    def printInfoClient(self, essid, macAP, macClient):
+        if macAP != None and macClient != None:
+            if (macClient) not in self.probeRequestClient:
+                self.probeRequestClient[macClient] = 0
+            
+            
+            percentCorr = 0
+            if self.numPackClient[macClient] != 0:
+                percentCorr = int(float(self.corruptedPackClient[macClient])/float(self.numPackClient[macClient])*100)
+            
+            strPercentage = str(percentCorr)+"%"
+            
+            i = tuple([essid, macAP, macClient, self.authentClient[macClient], self.deauthentClient[macClient], "-", self.eapHandshakeSuccessClient[macClient], self.eapHandshakeFailedClient[macClient], self.corruptedPackClient[macClient], strPercentage, self.dataListClient[macClient], self.rtsListClient[macClient], self.ctsListClient[macClient], self.ackListClient[macClient], self.beaconClient[macClient],  self.probeRequestClient[macClient], self.numPackClient[macClient]])
+            self.printerInfo.addInfoClient(i)
+    
+    
+    def createArrayForCorruptPack(self, essid, macAP, macClient, hasInfo):
+        self.createArray(macAP, macClient)
+        self.corruptedPack[(macAP, macClient)] += 1
+        self.numPack[(macAP, macClient)] += 1
         
+        self.createArrayAndUpdateInfo(macAP, macClient, Message.CORR_PACK)
+        #self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+        
+        if hasInfo:
+            self.printInfo(essid,macAP, macClient)
+            self.printInfoAP(essid, macAP, macClient)
+            self.printInfoClient(essid, macAP, macClient)
+        else:
+            self.checkEssid(macAP, macClient)
+            self.checkEssidAP(macAP, macClient)
+            self.checkEssidClient(macAP, macClient)
+    
 
     def checkFCS(self,p, from_DS, to_DS):
         #if p.haslayer(Dot11ProbeReq):
@@ -105,66 +270,36 @@ class SniffPackage:
             if p.Flags & 64 != 0:
                 if not from_DS and to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
-                        #print "FIRST: ",p.addr1, " ", p.addr2
                         if p.addr1 != None and p.addr2 != None:
-                            self.createArray(p.addr1,p.addr2)
-                            self.corruptedPack[(p.addr1,p.addr2)] += 1
-                            self.numPack[(p.addr1,p.addr2)] += 1
                             if hasattr(p, 'info'):
-                                self.printInfo(p.info,p.addr1,p.addr2)
+                                self.createArrayForCorruptPack(p.info, p.addr1, p.addr2, True)
                             else:
-                                self.checkEssid(p.addr1, p.addr2)
-                                #if p.addr1 in self.essid:
-                                    #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                                #else:
-                                    #self.printInfo("",p.addr1,p.addr2)
+                                self.createArrayForCorruptPack("", p.addr1, p.addr2, False)
                 elif from_DS and not to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
-                        #print "SECOND: ----------",p.addr2, " ", p.addr1
                         if p.addr1 != None and p.addr2 != None:
-                            self.createArray(p.addr2,p.addr1)
-                            self.corruptedPack[(p.addr2,p.addr1)] += 1
-                            self.numPack[(p.addr2,p.addr1)] += 1
-                            if hasattr(p, 'info'):
-                                if p.info != "":
-                                    self.printInfo(p.info,p.addr2,p.addr1)
-                                else:
-                                    self.checkEssid(p.addr2, p.addr1)
+                            if hasattr(p, 'info') and p.info != "":
+                                self.createArrayForCorruptPack(p.info, p.addr2, p.addr1, True)
+                                    #self.printInfo(p.info,p.addr2,p.addr1)
                             else:
-                                self.checkEssid(p.addr2, p.addr1)
-                                #if p.addr2 in self.essid:
-                                    #self.printInfo(self.essid[p.addr2],p.addr2,p.addr1)
-                                #else:
-                                    #self.printInfo("",p.addr2,p.addr1)
+                                self.createArrayForCorruptPack("", p.addr2, p.addr1, False)
                 elif not from_DS and not to_DS:
                     if hasattr(p, 'addr1') and hasattr(p, 'addr2'):
-                        #print "THIRD: ----------",p.addr1, " ", p.addr2
-                        if p.addr1 != None and p.addr2 != None:
-                            if p.addr1 in self.apPresent:
-                                macAP = p.addr1
+                        if p.addr3 != None and p.addr2 != None:
+                            if p.addr3 != p.addr2:
+                                macAP = p.addr3
                                 macClient = p.addr2
                             else:
-                                macAP = p.addr2
-                                macClient = p.addr1
-                            self.createArray(macAP, macClient)
-                            self.corruptedPack[(macAP, macClient)] += 1
-                            self.numPack[(macAP, macClient)] += 1
-                            if hasattr(p, 'info'):
-                                if p.info != "":
-                                    self.printInfo(p.info,macAP, macClient)
-                                else:
-                                    self.checkEssid(macAP, macClient)
+                                macAP = p.addr3
+                                macClient = None
+                            if hasattr(p, 'info') and p.info != "":
+                                self.createArrayForCorruptPack(p.info, macAP, macClient, True)
                             else:
-                                self.checkEssid(macAP, macClient)
-                                #if p.addr2 in self.essid:
-                                    #self.printInfo(self.essid[p.addr2],p.addr2,p.addr1)
-                                #else:
-                                    #self.printInfo("",p.addr2,p.addr1)
+                                self.createArrayForCorruptPack("", macAP, macClient, False)
                 return True
             
             else:
                 return False
-            #else: return False
 
 
     def checkEssid(self, macAP, macClient):
@@ -172,18 +307,79 @@ class SniffPackage:
             self.printInfo(self.essid[macAP], macAP, macClient)
         else:
             self.printInfo("-", macAP, macClient)
+    def checkEssidAP(self, macAP, macClient):
+        if macAP in self.essid:
+            self.printInfoAP(self.essid[macAP], macAP, macClient)
+        else:
+            self.printInfoAP("-", macAP, macClient)
+    def checkEssidClient(self, macAP, macClient):
+        if macAP in self.essid:
+            self.printInfoClient(self.essid[macAP], macAP, macClient)
+        else:
+            self.printInfoClient("-", macAP, macClient)
 
+    
+    def createArrayAndUpdateInfo(self, macAP, macClient, message):
+        self.createArray(macAP, macClient)
+        self.createArrayAP(macAP)
+        self.createArrayClient(macClient)
+
+        if message == Message.AUTH:
+            self.authent[(macAP, macClient)] += 1
+            self.authentAP[macAP] += 1
+            self.authentClient[macClient] += 1
+        elif message == Message.DEAUTH:
+            self.deauthent[(macAP, macClient)] += 1
+            self.deauthentAP[macAP] += 1
+            self.deauthentClient[macClient] += 1
+        elif message == Message.PROBE_REQ:
+            #self.probeRequest[(macAP, macClient)] += 1
+            self.probeRequestAP[macAP] += 1
+            self.probeRequestClient[macClient] += 1
+        elif message == Message.HAND_SUCC:
+            self.eapHandshakeSuccess[(macAP, macClient)] += 1
+            self.eapHandshakeSuccessAP[macAP] += 1
+            self.eapHandshakeSuccessClient[macClient] += 1
+        elif message == Message.HAND_FAIL:
+            self.eapHandshakeFailed[(macAP, macClient)] += 1
+            self.eapHandshakeFailedAP[macAP] += 1
+            self.eapHandshakeFailedClient[macClient] += 1
+        elif message == Message.CORR_PACK:
+            self.corruptedPack[(macAP, macClient)] += 1
+            self.corruptedPackAP[macAP] += 1
+            self.corruptedPackClient[macClient] += 1
+        elif message == Message.RTS:
+            self.rtsList[(macAP, macClient)] += 1
+            self.rtsListAP[macAP] += 1
+            self.rtsListClient[macClient] += 1
+        elif message == Message.CTS:
+            self.ctsList[(macAP, macClient)] += 1
+            self.ctsListAP[macAP] += 1
+            self.ctsListClient[macClient] += 1
+        elif message == Message.ACK:
+            self.ackList[(macAP, macClient)] += 1
+            self.ackListAP[macAP] += 1
+            self.ackListClient[macClient] += 1
+        elif message == Message.DATA:
+            self.dataList[(macAP, macClient)] += 1
+            self.dataListAP[macAP] += 1
+            self.dataListClient[macClient] += 1
+        elif message == Message.BEACON:
+            self.beaconList[(macAP, macClient)] += 1
+            self.beaconAP[macAP] += 1
+            self.beaconClient[macClient] += 1
+        #elif message == Message.NUM_PACK:
+        self.numPack[(macAP, macClient)] += 1
+        self.numPackAP[macAP] += 1
+        self.numPackClient[macClient] += 1
+            
+        self.checkEssid(macAP, macClient)
+        self.checkEssidAP(macAP, macClient)
+        self.checkEssidClient(macAP, macClient)
 
 
     def sniffmgmt(self,p):
         #p.show()
-        #print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-        #ls(p)
-        #PR = p.present & 0x7
-        #flag = PR & 0x1 != 0
-        #print flag
-        
-        #self.packages.append(p)
         #Dot11.enable_FCS(True)
         
         from_DS = None
@@ -201,48 +397,63 @@ class SniffPackage:
         #isCorrupted = False
         elif not isCorrupted:
             activeAp = 0
-            if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                #print self.apPresent
-                if p.addr1 in self.apPresent:
-                    macAP = p.addr1
+            if (not from_DS and to_DS):
+                macAP = p.addr1
+                if p.addr1 != p.addr2:
                     macClient = p.addr2
                 else:
-                    macAP = p.addr2
-                    macClient = p.addr1
-                #if p.addr1 not in self.apPresent and p.addr2 != None:
-                    #print "FIRST ", p.addr1, " ", p.addr2
-                self.createArray(macAP,macClient)
-                self.numPack[macAP,macClient] += 1
+                    macClient = None
+                    
+                #self.createArray(macAP,macClient)
+                #self.numPack[macAP,macClient] += 1
+                
+                self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+                
                 #self.checkEssid(p.addr1, p.addr2)
             elif from_DS and not to_DS:
-                #print "SECOND ", p.addr3, " ", p.addr1
-                #if p.addr2 in apPresent and p.addr1 in apPresent[p.addr2]:
-                    #self.createArray(p.addr2,p.addr1)
-                    #self.numPack[p.addr2,p.addr1] += 1   
-                #else:
-                self.createArray(p.addr3,p.addr1)
-                self.numPack[p.addr3,p.addr1] += 1   
+                macAP = p.addr2
+                if p.addr3 != p.addr2:
+                    macClient = p.addr3
+                else:
+                    macClient = None
+                #self.createArray(macAP, macClient)
+                #self.numPack[macAP, macClient] += 1
+                
+                self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+            elif not from_DS and not to_DS:
+                macAP = p.addr3
+                if p.addr3 != p.addr2:
+                    macClient = p.addr2
+                else:
+                    macClient = None
+                #print macAP, " ", macClient
+                #self.createArray(macAP,macClient)
+                #self.numPack[macAP,macClient] += 1
+                
+                self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+                
                 #self.checkEssid(p.addr3, p.addr1)
             #p.show()
             
             if p.haslayer(Dot11) and hasattr(p, 'info'):
-                ssid = ( len(p.info) > 0 and p.info != "\x00" ) and p.info or '<hidden>'
+                #ssid = ( len(p.info) > 0 and p.info != "\x00" ) and p.info or '<hidden>'
                 activeAp = 1
-                #print "------------------------------------ ", ssid
                 if p.addr3 not in self.apPresent:
                     self.apPresent[p.addr3] = []
-                #if p.addr3 != SniffPackage.BROADCAST_ADDR:
-                    #print "+++++++++++++++++++++++++++++++++++ ", ssid, " ", p.addr3
-                self.essid[p.addr3] = ssid
-                self.createArray(p.addr3, p.addr2)
-                self.checkEssid(p.addr3, p.addr2)
+                self.essid[p.addr3] = p.info
+                self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.NUM_PACK)
+                #self.createArray(p.addr3, p.addr2)
+                
+                #print p.info, " ", p.addr1, " ", p.addr2, " ", p.addr3, " ", from_DS, " ", to_DS," ", p.type, " ", p.subtype
+                
+                #self.checkEssid(p.addr3, p.addr2)
                 #self.printInfo(self.essid[p.addr3], p.addr3, p.addr2)
             
             
             if from_DS and not to_DS and p.addr3 != SniffPackage.BROADCAST_ADDR and p.addr1 != SniffPackage.BROADCAST_ADDR:
                 key = "%s" % (p.addr3)
                 self.createArray(key, p.addr1)
-                self.checkEssid(key, p.addr1)
+                #self.checkEssid(key, p.addr1)
                 #self.checkFrequence(key,p.addr1,p.dBm_AntSignal)
                 #if key in self.essid:
                     #self.printInfo(self.essid[key],key,p.addr1)
@@ -260,7 +471,7 @@ class SniffPackage:
                         self.apPresent[key].append(p.addr2)
                     self.createArray(key, p.addr2)
                     self.checkFrequence(key,p.addr2,p.dBm_AntSignal)
-                    self.checkEssid(key, p.addr2)
+                    #self.checkEssid(key, p.addr2)
                     #if key in self.essid:
                         #self.printInfo(self.essid[key],key,p.addr2)
                     #else:
@@ -268,93 +479,120 @@ class SniffPackage:
             
             
             if p.haslayer(EAP):
-                #if p["EAP":].code == 1: # --------------------> REQUEST
-                    #self.eapRequest[(p.addr2,p.addr1)] = 1
-                #elif p["EAP":].code == 2: # --------------------------> RESPONSE
-                    #if (p.addr1,p.addr2) in self.eapRequest and self.eapRequest[(p.addr1,p.addr2)] == 1:
-                        #self.eapRequest[(p.addr1,p.addr2)] = 2
                 if p["EAP":].code == 3: # -----------------------> SUCCESS
-                    #p.show()
                     if (p.addr2,p.addr1) not in self.eapHandshakeSuccess:
                         self.createArray(p.addr2, p.addr1)
-                    #self.eapRequest[(p.addr2,p.addr1)] = 0
-                    self.eapHandshakeSuccess[(p.addr2,p.addr1)] += 1
-                    self.checkEssid(p.addr2, p.addr1)
+                    if not from_DS and to_DS:
+                        self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_SUCC)
+                    elif from_DS and not to_DS:
+                        self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
+                    elif not from_DS and not to_DS:
+                        self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_SUCC)
+                    ##self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
+                    #self.checkEssid(p.addr2, p.addr1)
                     #self.printInfo(self.essid[p.addr2],p.addr2,p.addr1)
                     return
                 elif p["EAP":] == 4: # --------------------> FAILED
-                    if (p.addr2,p.addr1) in self.eapRequest:
-                        self.eapHandshakeSuccess[(p.addr2,p.addr1)] = 0
+                    if not from_DS and to_DS:
+                        self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_FAIL)
+                    elif from_DS and not to_DS:
+                        self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_FAIL)
+                    elif not from_DS and not to_DS:
+                        self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_FAIL)
+                    
+                    #if (p.addr2,p.addr1) in self.eapRequest:
+                        #self.eapHandshakeSuccess[(p.addr2,p.addr1)] = 0
                         #self.eapRequest[(p.addr2,p.addr1)] = 0
-                    self.eapHandshakeFailed[(p.addr2,p.addr1)] += 1
-                    self.checkEssid(p.addr2, p.addr1)
+                    ##self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_FAIL)
+                    #self.checkEssidClient(p.addr2, p.addr1)
+                    #self.checkEssid(p.addr2, p.addr1)
                     return
             
             if hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 8:   #BEACON
                 #p.show()
-                #self.cont += 1
-                #print p.addr1, " ", p.addr2, " ", p.addr3, " ----> ", from_DS, " ", to_DS
-                if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    self.createArray(p.addr1,p.addr2)
-                    self.beaconList[p.addr1,p.addr2] += 1
-                    self.checkEssid(p.addr1, p.addr2)
+                if not from_DS and to_DS:
+                    self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
+                    
                 elif from_DS and not to_DS:
-                    self.createArray(p.addr2,p.addr1)
-                    self.beaconList[p.addr2,p.addr1] += 1   
-                    self.checkEssid(p.addr2, p.addr1)
+                    self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
+                elif not from_DS and not to_DS:
+                    self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
+                    
+                    #self.checkEssid(p.addr2, p.addr1)
                 return
             if hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 0:   #DATA
                 #p.show()
-                if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    self.createArray(p.addr1,p.addr2)
-                    self.dataList[p.addr1,p.addr2] += 1
-                    self.checkEssid(p.addr1, p.addr2)
+                if not from_DS and to_DS:
+                    self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.DATA)
+                    #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.NUM_PACK)
+                    #self.checkEssid(p.addr1, p.addr2)
                 elif from_DS and not to_DS:
-                    self.createArray(p.addr3,p.addr1)
-                    self.dataList[p.addr3,p.addr1] += 1   
-                    self.checkEssid(p.addr3, p.addr1)
+                    self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.DATA)
+                    #self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.NUM_PACK)
+                    #self.checkEssid(p.addr3, p.addr1)
+                elif not from_DS and not to_DS:
+                    self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.DATA)
+                    #self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.NUM_PACK)
+                    
                 return
                     
             if hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 11:   #RTS
-                if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    if p.addr1 in self.apPresent:
-                        macAP = p.addr1
-                        macClient = p.addr2
-                    else:
-                        macAP = p.addr2
-                        macClient = p.addr1
-                    self.createArray(macAP, macClient)
-                    self.rtsList[macAP, macClient] += 1   
-                    self.checkEssid(macAP, macClient)
+                #p.show()
+                #if not from_DS and to_DS:
+                    #self.createArray(macAP, macClient)
+                    #self.rtsList[macAP, macClient] += 1
+                    
+                    #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.RTS)
+                    
+                    #self.checkEssid(macAP, macClient)
                     #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                elif from_DS and not to_DS:
-                    self.createArray(p.addr3,p.addr1)
-                    self.rtsList[p.addr3,p.addr1] += 1   
-                    self.checkEssid(p.addr3, p.addr1)
+                #elif from_DS and not to_DS:
+                    #self.createArray(p.addr3,p.addr1)
+                    #self.rtsList[p.addr3,p.addr1] += 1   
+                #if p.addr2 in self.apPresent: 
+                self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.RTS)
+                #else:
+                    #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.RTS)
+                    #self.checkEssid(p.addr3, p.addr1)
+                #elif  not from_DS and not to_DS:
+                    #self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.RTS)
                 return
                     #self.printInfo(self.essid[p.addr3],p.addr3,p.addr1)
             if hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 12:   #CTS
-                if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    self.createArray(p.addr1,p.addr2)
-                    self.ctsList[p.addr1,p.addr2] += 1   
-                    self.checkEssid(p.addr1, p.addr2)
+                #if (not from_DS and to_DS) or (not from_DS and not to_DS):
+                    #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.CTS)
+                    #self.checkEssid(p.addr1, p.addr2)
                     #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                elif from_DS and not to_DS:
-                    self.createArray(p.addr3,p.addr1)
-                    self.ctsList[p.addr3,p.addr1] += 1   
-                    self.checkEssid(p.addr3, p.addr1)
+                #elif from_DS and not to_DS:
+                    #self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.CTS)
+                    #self.checkEssid(p.addr3, p.addr1)
+                #self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.CTS)
+                
+                if p.addr1 != None:
+                    if p.addr1 in self.apPresent:
+                        self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.CTS)
+                    else:
+                        self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.CTS)
+                
                 return
                     #self.printInfo(self.essid[p.addr3],p.addr3,p.addr1)
             if hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 13:   #ACK
-                if (not from_DS and to_DS) or (not from_DS and not to_DS):
-                    self.createArray(p.addr1,p.addr2)
-                    self.ackList[p.addr1,p.addr2] += 1   
-                    self.checkEssid(p.addr1, p.addr2)
-                    #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                elif from_DS and not to_DS:
-                    self.createArray(p.addr3,p.addr1)
-                    self.ackList[p.addr3,p.addr1] += 1   
-                    self.checkEssid(p.addr3, p.addr1)
+
+                if p.addr1 != None:
+                    if p.addr1 in self.apPresent:
+                        self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.ACK)
+                    else:
+                        self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.ACK)
+                
+                #if (not from_DS and to_DS) or (not from_DS and not to_DS):
+                    #self.createArray(p.addr1,p.addr2)
+                    #self.ackList[p.addr1,p.addr2] += 1   
+                    #self.checkEssid(p.addr1, p.addr2)
+                    ##self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
+                #elif from_DS and not to_DS:
+                    #self.createArray(p.addr3,p.addr1)
+                    #self.ackList[p.addr3,p.addr1] += 1   
+                    #self.checkEssid(p.addr3, p.addr1)
                 
                 return
                     #self.printInfo(self.essid[p.addr3],p.addr3,p.addr1)
@@ -366,20 +604,18 @@ class SniffPackage:
                 if p.addr1 in self.apPresent:
                     macAP = p.addr1
                     macClient = p.addr2
-                    #print "IIIIIIIIN -------------------------------------------------------------------- ", macAP, " ", macClient
                 else:
                     macAP = p.addr2
                     macClient = p.addr1
-                    #print "NOOOOOOOOOOOOT -------------------------------------------------------------------- ", macAP, " ", macClient
                     
-                self.createArray(macAP, macClient)
                 #if p.addr1 in apPresent:
                     #if p.addr2 not in apPresent[p.addr1]:
                         #apPresent[p.addr1].append(p.addr2);
                 
-                self.authent[macAP, macClient] += 1 
                 self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
-                self.checkEssid(macAP, macClient)
+                
+                self.createArrayAndUpdateInfo(macAP, macClient, Message.AUTH)
+                #self.checkEssid(macAP, macClient)
                 #printInfo(essid[p.addr1],p.addr1,p.addr2)
                 return
                 #return
@@ -397,54 +633,37 @@ class SniffPackage:
                     if macClient in self.apPresent[macAP]:
                         self.apPresent[macAP].remove(macClient);
                         
-                    self.deauthent[macAP, macClient] += 1
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
                     #self.printInfo(self.essid[p.addr1],p.addr1,p.addr2)
-                    self.checkEssid(macAP, macClient)
+                    #self.checkEssid(macAP, macClient)
+                    
+                    self.createArrayAndUpdateInfo(macAP, macClient, Message.DEAUTH)
                 return
                     
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 4:   #PROBE_REQ
-                self.createArray(p.addr1,p.addr2)
+                if p.addr1 in self.apPresent:
+                    macAP = p.addr1
+                    macClient = p.addr2
+                else:
+                    macAP = p.addr2
+                    macClient = p.addr1
+                self.createArray(macAP,macClient)
                 #if p.info == "":
                     #p.info = "-"
-                if p.addr1 in self.essid:
-                    p.info = self.essid[p.addr1]
-                if (p.info,p.addr2) not in self.probeRequest:
-                    self.probeRequest[(p.info,p.addr2)] = 0
-                self.probeRequest[(p.info,p.addr2)] += 1
-                self.checkFrequence(p.addr1,p.addr2,p.dBm_AntSignal)
+                if macAP in self.essid:
+                    p.info = self.essid[macAP]
+                if (p.info,macClient) not in self.probeRequest:
+                    self.probeRequest[(p.info,macClient)] = 0
+                self.probeRequest[(p.info,macClient)] += 1
+                self.checkFrequence(macAP,macClient,p.dBm_AntSignal)
                 #self.enter = True
-                self.checkEssid(p.addr1, p.addr2)
+                #self.checkEssid(p.addr1, p.addr2)
+                
+                self.createArrayAndUpdateInfo(macAP, macClient, Message.PROBE_REQ)
                 
                 #self.printInfo(p.info,p.addr1,p.addr2)
                 return
             
-            #if activeAp == 1:
-            #if from_DS and not to_DS and p.addr3 != SniffPackage.BROADCAST_ADDR and p.addr1 != SniffPackage.BROADCAST_ADDR:
-                #key = "%s" % (p.addr3)
-                #self.createArray(key, p.addr1)
-                ##self.checkFrequence(key,p.addr1,p.dBm_AntSignal)
-                #if key in self.essid:
-                    #self.printInfo(self.essid[key],key,p.addr1)
-                #else:
-                    #self.printInfo("<hidden>",key,p.addr1)
-                #return
-
-            ##elif activeAp == 0:
-            #if not from_DS and to_DS and p.addr2 != SniffPackage.BROADCAST_ADDR:
-                #key = "%s" % (p.addr1)
-                #if key not in self.apPresent:
-                    #self.apPresent[p.addr3] = []
-                #if key in self.apPresent:
-                    #if p.addr2 not in self.apPresent[key]:
-                        #self.apPresent[key].append(p.addr2)
-                    #self.createArray(key, p.addr2)
-                    ##self.checkFrequence(key,p.addr2,p.dBm_AntSignal)
-                    #if key in self.essid:
-                        #self.printInfo(self.essid[key],key,p.addr2)
-                    #else:
-                        #self.printInfo("<hidden>",key,p.addr2)
-                    #return
 
         #self.printInfo(p.info,p.addr1,p.addr2)
 
@@ -457,11 +676,3 @@ class SniffPackage:
             print "NUM CLIENT CONNECT IN AP: "+ key + " ", len(self.apPresent[key])
             for c in self.apPresent[key]:
                 print c
-
-    def takeCont(self):
-        return self.cont
-
-#if __name__ == "__main__":
-
-    #for line in sys.stdin:
-        #sys.stdout.write(line)
