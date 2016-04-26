@@ -208,7 +208,7 @@ class SniffPackage:
             if self.numPack[(macAP,macClient)] != 0:
                 percentCorr = int(float(self.corruptedPack[(macAP,macClient)])/float(self.numPack[(macAP,macClient)])*100)
             
-            strPercentage = str(percentCorr)+"%"
+            strPercentage = str(percentCorr)
             
             i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.numPack[(macAP,macClient)]])
             self.printerInfo.addInfo(i)
@@ -225,7 +225,7 @@ class SniffPackage:
             if self.numPackAP[macAP] != 0:
                 percentCorr = int(float(self.corruptedPackAP[macAP])/float(self.numPackAP[macAP])*100)
             
-            strPercentage = str(percentCorr)+"%"
+            strPercentage = str(percentCorr)
             
             i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.numPackAP[macAP]])
             self.printerInfo.addInfoAP(i)
@@ -240,7 +240,7 @@ class SniffPackage:
             if self.numPackClient[macClient] != 0:
                 percentCorr = int(float(self.corruptedPackClient[macClient])/float(self.numPackClient[macClient])*100)
             
-            strPercentage = str(percentCorr)+"%"
+            strPercentage = str(percentCorr)
             
             i = tuple([essid, macAP, macClient, self.authentClient[macClient], self.deauthentClient[macClient], "-", self.eapHandshakeSuccessClient[macClient], self.eapHandshakeFailedClient[macClient], self.corruptedPackClient[macClient], strPercentage, self.dataListClient[macClient], self.rtsListClient[macClient], self.ctsListClient[macClient], self.ackListClient[macClient], self.beaconClient[macClient],  self.probeRequestClient[macClient], self.numPackClient[macClient]])
             self.printerInfo.addInfoClient(i)
@@ -248,8 +248,8 @@ class SniffPackage:
     
     def createArrayForCorruptPack(self, essid, macAP, macClient, hasInfo):
         self.createArray(macAP, macClient)
-        self.corruptedPack[(macAP, macClient)] += 1
-        self.numPack[(macAP, macClient)] += 1
+        #self.corruptedPack[(macAP, macClient)] += 1
+        #self.numPack[(macAP, macClient)] += 1
         
         self.createArrayAndUpdateInfo(macAP, macClient, Message.CORR_PACK)
         #self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
@@ -408,6 +408,7 @@ class SniffPackage:
                 #self.numPack[macAP,macClient] += 1
                 
                 self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+                self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
                 
                 #self.checkEssid(p.addr1, p.addr2)
             elif from_DS and not to_DS:
@@ -420,6 +421,7 @@ class SniffPackage:
                 #self.numPack[macAP, macClient] += 1
                 
                 self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+                self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
             elif not from_DS and not to_DS:
                 macAP = p.addr3
                 if p.addr3 != p.addr2:
@@ -431,6 +433,7 @@ class SniffPackage:
                 #self.numPack[macAP,macClient] += 1
                 
                 self.createArrayAndUpdateInfo(macAP, macClient, Message.NUM_PACK)
+                self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
                 
                 #self.checkEssid(p.addr3, p.addr1)
             #p.show()
@@ -442,6 +445,7 @@ class SniffPackage:
                     self.apPresent[p.addr3] = []
                 self.essid[p.addr3] = p.info
                 self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.NUM_PACK)
+                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                 #self.createArray(p.addr3, p.addr2)
                 
                 #print p.info, " ", p.addr1, " ", p.addr2, " ", p.addr3, " ", from_DS, " ", to_DS," ", p.type, " ", p.subtype
@@ -453,6 +457,7 @@ class SniffPackage:
             if from_DS and not to_DS and p.addr3 != SniffPackage.BROADCAST_ADDR and p.addr1 != SniffPackage.BROADCAST_ADDR:
                 key = "%s" % (p.addr3)
                 self.createArray(key, p.addr1)
+                self.checkFrequence(key, p.addr1,p.dBm_AntSignal)
                 #self.checkEssid(key, p.addr1)
                 #self.checkFrequence(key,p.addr1,p.dBm_AntSignal)
                 #if key in self.essid:
@@ -484,10 +489,13 @@ class SniffPackage:
                         self.createArray(p.addr2, p.addr1)
                     if not from_DS and to_DS:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_SUCC)
+                        self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     elif from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
+                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                     elif not from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_SUCC)
+                        self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                     ##self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
                     #self.checkEssid(p.addr2, p.addr1)
                     #self.printInfo(self.essid[p.addr2],p.addr2,p.addr1)
@@ -495,10 +503,13 @@ class SniffPackage:
                 elif p["EAP":] == 4: # --------------------> FAILED
                     if not from_DS and to_DS:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_FAIL)
+                        self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     elif from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_FAIL)
+                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                     elif not from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_FAIL)
+                        self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                     
                     #if (p.addr2,p.addr1) in self.eapRequest:
                         #self.eapHandshakeSuccess[(p.addr2,p.addr1)] = 0
@@ -512,11 +523,14 @@ class SniffPackage:
                 #p.show()
                 if not from_DS and to_DS:
                     self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
+                    self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     
                 elif from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
+                    self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                 elif not from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
+                    self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                     
                     #self.checkEssid(p.addr2, p.addr1)
                 return
@@ -524,14 +538,17 @@ class SniffPackage:
                 #p.show()
                 if not from_DS and to_DS:
                     self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.DATA)
+                    self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.NUM_PACK)
                     #self.checkEssid(p.addr1, p.addr2)
                 elif from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.DATA)
+                    self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                     #self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.NUM_PACK)
                     #self.checkEssid(p.addr3, p.addr1)
                 elif not from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.DATA)
+                    self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                     #self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.NUM_PACK)
                     
                 return
@@ -551,6 +568,7 @@ class SniffPackage:
                     #self.rtsList[p.addr3,p.addr1] += 1   
                 #if p.addr2 in self.apPresent: 
                 self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.RTS)
+                self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                 #else:
                     #self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.RTS)
                     #self.checkEssid(p.addr3, p.addr1)
@@ -571,8 +589,10 @@ class SniffPackage:
                 if p.addr1 != None:
                     if p.addr1 in self.apPresent:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.CTS)
+                        self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     else:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.CTS)
+                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                 
                 return
                     #self.printInfo(self.essid[p.addr3],p.addr3,p.addr1)
@@ -581,8 +601,10 @@ class SniffPackage:
                 if p.addr1 != None:
                     if p.addr1 in self.apPresent:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.ACK)
+                        self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
                     else:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.ACK)
+                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
                 
                 #if (not from_DS and to_DS) or (not from_DS and not to_DS):
                     #self.createArray(p.addr1,p.addr2)

@@ -307,7 +307,7 @@ class Texttable:
 
         - cells can contain newlines and tabs
         """
-
+        #print array, " ", len(array)
         self._check_row_size(array)
 
         if not hasattr(self, "_dtype"):
@@ -340,6 +340,34 @@ class Texttable:
 
 
     def draw(self):
+        """Draw the table
+
+        - the table is returned as a whole string
+        """
+
+        #if not self._header and not self._rows:
+            #return
+        self._compute_cols_width()
+        #self._check_align()
+        out = ""
+        #if self._has_border():
+            #out += self._hline()
+        #if self._header:
+            #out += self._draw_line(self._header, isheader=True)
+            #if self._has_header():
+                #out += self._hline_header()
+        length = 0
+        for row in self._rows:
+            length += 1
+            out += self._draw_line(row)
+            if self._has_hlines() and length < len(self._rows):
+                out += self._hline()
+        if self._has_border():
+            out += self._hline()
+        return out[:-1]
+    
+    
+    def drawHeader(self):
         """Draw the table
 
         - the table is returned as a whole string
