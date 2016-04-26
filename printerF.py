@@ -7,6 +7,10 @@ class Printer:
     HEIGHT_TABLE_CLIENT = 25
     
     def __init__(self, height):
+        
+        self.colorHeader = curses.A_BOLD
+        self.colorHeader |= curses.color_pair(2)
+        
         self.height = height
         self.src = curses.newpad(height,300)
     

@@ -10,9 +10,13 @@ from time import sleep
 import printerInfo
 import detachPack
 import subprocess
-
+import saving
 
 apPresent = {}
+
+name = "CAPT-"
+extension = ".pcap"
+contFile = 1
 
 #def tryThis(p):
     #a = str(p).encode('hex')
@@ -38,9 +42,9 @@ if __name__ == "__main__":
         print 'Press CTRL+c to stop sniffing...'
       
         
-        subprocess.call("ifconfig "+ args.interface +" down", shell=True)
-        subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
-        subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+        #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
+        #subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
+        #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
         
         filterStr = ""
         if args.channel != None:
@@ -54,65 +58,37 @@ if __name__ == "__main__":
             
         #def s():
 
-        #if args.read == True:
-            #import interfaceScript
-            ##index = 0
-            #a = sys.stdin.readline()
-            ##print a
-            ##print len(a)
-            ##b = a[len(a)-1].rstrip
-            #b = a.rstrip()
-            #path = "/home/eliana/Dropbox/Tesi/APMonitoring/MonitoringAP[PROVA2]/"+b
-            ##path.rstrip()
-            #print path
-            #print b
-            #printerInfo = printerInfo.PrinterInfo(1, "Thread1", 2)
-            ##printerInfo.start()
-            #sniffPack = interfaceScript.SniffPackage(printerInfo)
-            #sniff(offline=path, prn=sniffPack.sniffmgmt)
-            ##thread.start_new_thread(sniff(offline=b, prn=sniffPack.sniffmgmt), ())
-            
         if args.file != None:
             import interfaceScript
-            #index = 0
             printerInfo = printerInfo.PrinterInfo(1, "Thread1", 2)
             printerInfo.start()
             sniffPack = interfaceScript.SniffPackage(printerInfo)
-            #logfile = open(args.file, 'r')
-            #loglist = logfile.readlines()
-            #print args.file
-            #print logfile
-            #if len(loglist) == 0:
-                #print "TTTT"
-            #else:
-                #print "YYYYYY"
-            #sleep(1)
+
             sniff(offline=args.file, prn=sniffPack.sniffmgmt)
             
             printerInfo.endOfflineSniff(True)
+            sys.exit(0)
             
         if args.interface != None:
-            #subprocess.call(stri, shell=True)
-            #print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-                
-            #printerInfo.setStopSniff(True)
-            
-            #sniff(iface="en1",prn=lambda x:x.sprintf("{Dot11Beacon:%Dot11.addr3%\t%Dot11Beacon.info%}"))
-            #line in sys.stdin:
-                #sys.stdout.write(line)
-
-            #for i in sniffPack.takePack():
-                #i.show()
-        
-            print "\n\n"
-            #sniffPack.printClientConnect()
 
             if args.save == True:
-                detachPack = detachPack.DetachPack()
-                #subprocess.call("./monitoringAP.py -f "+detachPack.getFilename(), shell=True)
-                sniff(iface=args.interface, prn=detachPack.detach)
                 
-                #thread.start_new_thread(sniff(iface=args.interface, prn=detachPack.detach), ())
+                nameFile = name+str(contFile)+extension
+                existFile = os.path.exists(nameFile)
+
+                while existFile:
+                    contFile += 1
+                    nameFile = name+str(contFile)+extension
+                    existFile = os.path.exists(nameFile)
+                    
+                detachPack = detachPack.DetachPack(nameFile)
+                
+                savingPack = saving.Saving(2, "Thread3", 2, detachPack, args.interface)
+                savingPack.start()
+                
+                subprocess.call("./monitoringAP.py -f "+nameFile, shell=True)
+                
+                sys.exit(0)
                 
             else:
                 import interfaceScript

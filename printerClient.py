@@ -1,6 +1,6 @@
  #!/usr/bin/python
 
-import curses, re
+import curses, re, sys
 import printerF
 
 import texttable
@@ -32,7 +32,7 @@ class PrinterClient(printerF.Printer):
         
         
     def drawTable(self):
-        self.src.insstr(0,0, str(PrinterClient.HEADER).strip("[]").replace("'","").replace(",",""), curses.color_pair(2))
+        self.src.insstr(0,0, str(PrinterClient.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
         self.src.insstr(1,0, str("="*141))
         #if not self.tupl:
             #self.src.insstr(2, 0, self.tableOrdClient.draw())
@@ -41,7 +41,12 @@ class PrinterClient(printerF.Printer):
             self.src.insstr(2, 0, self.tableOrdClient.draw())
             self.src.insstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
             if not self.pressedInfo:
+                #try:
                 self.src.insstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
+                #except Exception, e:
+                    #print str(e)
+                    #sys.exit(0)
+                    #self.src.insstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
             else:
                 self.src.insstr(2+self.indexCursor+2, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
                 self.src.insstr(2+self.indexCursor+3,0, str("="*183))

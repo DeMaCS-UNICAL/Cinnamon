@@ -70,14 +70,21 @@ class PrinterInfo (threading.Thread):
         self.mypad_pos_ap = 0
         
         curses.start_color()
+        
+        curses.use_default_colors()
+        for i in range(0, curses.COLORS):
+            curses.init_pair(i + 1, i, -1)
+        #try:
+            #for i in range(0, 255):
+                #stdscr.addstr(str(i), curses.color_pair(i)
 
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_CYAN, curses.COLOR_BLACK)
         
         
-        self.printerClient = printerClient.PrinterClient(self.srcHeight)
-        self.printerAP = printerAP.PrinterAP(self.srcHeight)
+        self.printerClient = printerClient.PrinterClient(self.srcHeight+10)
+        self.printerAP = printerAP.PrinterAP(self.srcHeight+10)
         
         self.printerAP.createTable(self.indexOrdAP)
         self.printerClient.createTable(PrinterInfo.HEADER_INFO, self.indexOrdClient)
@@ -90,6 +97,9 @@ class PrinterInfo (threading.Thread):
             if not self.pauseSniff:
                 self.printerClient.clear()
                 self.printerAP.clear()
+                
+                self.printerClient.resizeTable(self.srcHeight+ 100)
+                self.printerAP.resizeTable(self.srcHeight+ 100)
                 
                 self.printerClient.drawTable()
                 self.printerAP.drawTable()
@@ -161,8 +171,8 @@ class PrinterInfo (threading.Thread):
                             self.printerAP.refreshTable()
                         
                 elif cmd == ord('+'):
-                    if self.indexCursorClient + self.contInfoClient +4 > self.srcHeight:
-                        self.printerClient.resizeTable(self.srcHeight+ self.contInfoClient +4)
+                    #if self.indexCursorClient + self.contInfoClient +4 > self.srcHeight:
+                        #self.printerClient.resizeTable(self.srcHeight+ self.contInfoClient +4)
 
                     self.pressedInfo = True
                     self.printerClient.setPressedInfo(self.pressedInfo)
@@ -217,6 +227,8 @@ class PrinterInfo (threading.Thread):
                 elif cmd == ord('q'):
                     curses.endwin()
                     self.stopSniff = True
+                    sys.exit(0)
+                    
                     
                 if self.endSniffOffline:
                     self.printInformation()

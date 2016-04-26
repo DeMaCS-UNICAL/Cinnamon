@@ -26,7 +26,7 @@ class PrinterAP(printerF.Printer):
         
         
     def drawTable(self):
-        self.src.insstr(0,0, str(PrinterAP.HEADER).strip("[]").replace("'","").replace(",",""), curses.color_pair(2))
+        self.src.insstr(0,0, str(PrinterAP.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
         self.src.insstr(1,0, str("="*162))
         
         if self.indexCursor > 0:
@@ -80,7 +80,12 @@ class PrinterAP(printerF.Printer):
         self.tableOrdAP_2.add_rows([PrinterAP.HEADER_AP_2])
         self.tableSelected.add_rows([PrinterAP.HEADER_AP_2])
         
-        
+    
+    
+    def resizeTable(self, height):
+        self.height = height
+        self.src.resize(height, 300)
+    
         
     def add_rows(self, tup, index):
         if index == 0:
