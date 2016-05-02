@@ -10,11 +10,13 @@ from texttable import Texttable
 
 class PrinterAP(printerF.Printer):
     
-    HEADER = [' ESSID               ',' BSSID             ',' AUTH ',' DEAUTH ',' PWR ',' HAND_SUCC ',' HAND_FAIL ',' CORRUPT ',' CORR% ',' DATA ',' RTS ',' CTS ',' ACK ',' BEACON ', ' PROBE_REQ ', ' TOT_PACK']
+    CONSTANT = 183
     
-    HEADER_AP_2 = ['ESSID               ','BSSID            ','AUTH','DEAUTH','PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR%','DATA','RTS','CTS','ACK','BEACON', 'PROBE_REQ', 'TOT_PACK']
+    HEADER = [' ESSID               ',' BSSID             ',' AUTH ',' DEAUTH ',' PWR ',' HAND_SUCC ',' HAND_FAIL ',' CORRUPT ',' CORR% ',' DATA ',' RTS ',' CTS ',' ACK ',' BEACON ', ' PROBE_REQ ', ' PROBE_RESP ', ' TOT_PACK', ' OTHER']
     
-    HEADER_AP_TMP = [' ESSID               ',' BSSID             ',' AUTH ',' DEAUTH ',' PWR ',' HAND_SUCC ',' HAND_FAIL ',' CORRUPT ',' CORR% ',' DATA ',' RTS ',' CTS ',' ACK ',' BEACON ', ' PROBE_REQ ', ' TOT_PACK']
+    HEADER_AP_2 = ['ESSID               ','BSSID            ','AUTH','DEAUTH','PWR','HAND_SUCC','HAND_FAIL','CORRUPT','CORR%','DATA','RTS','CTS','ACK','BEACON', 'PROBE_REQ', 'PROBE_RESP', 'TOT_PACK', 'OTHER']
+    
+    HEADER_AP_TMP = [' ESSID               ',' BSSID             ',' AUTH ',' DEAUTH ',' PWR ',' HAND_SUCC ',' HAND_FAIL ',' CORRUPT ',' CORR% ',' DATA ',' RTS ',' CTS ',' ACK ',' BEACON ', ' PROBE_REQ ', ' PROBE_RESP ', ' TOT_PACK', ' OTHER']
     
     
     def __init__(self, height):
@@ -26,17 +28,26 @@ class PrinterAP(printerF.Printer):
         
         
     def drawTable(self):
-        self.src.insstr(0,0, str(PrinterAP.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
-        self.src.insstr(1,0, str("="*162))
-        
+        self.src.addstr(0,0, str(PrinterAP.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
+        self.src.addstr(1,0, str("="*PrinterAP.CONSTANT))
         if self.indexCursor > 0:
-            self.src.insstr(2, 0, self.tableOrdAP.draw())
-            self.src.insstr(2+self.indexCursor, 0, self.tableSelected.draw(), curses.color_pair(1))
+            self.src.addstr(2, 0, self.tableOrdAP.draw())
+            self.src.addstr(2+self.indexCursor, 0, self.tableSelected.draw(), curses.color_pair(1))
             
-            self.src.insstr(2+self.indexCursor+2, 0, self.tableOrdAP_2.draw())
+            self.src.addstr(2+self.indexCursor+1, 0, " "*PrinterAP.CONSTANT)
+            self.src.addstr(2+self.indexCursor+2, 0, self.tableOrdAP_2.draw())
         else:
-            self.src.insstr(2, 0, self.tableSelected.draw(), curses.color_pair(1))
-            self.src.insstr(4, 0, self.tableOrdAP_2.draw())
+            try:
+                self.tableSelected.draw().decode('utf-8')
+                self.src.addstr(2, 0, self.tableSelected.draw(), curses.color_pair(1))
+                self.src.addstr(3, 0, " "*PrinterAP.CONSTANT)
+                self.src.addstr(4, 0, self.tableOrdAP_2.draw())
+            except:
+                fifo = open("b.txt", "w")
+                fifo.write(self.tableSelected.draw())
+                fifo.write("\n")
+                fifo.close()
+                
 
 
 
@@ -59,16 +70,16 @@ class PrinterAP(printerF.Printer):
         #self.tableSelected.reset()
         
         self.tableOrdAP.set_deco(Texttable.HEADER)
-        self.tableOrdAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableOrdAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableOrdAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableOrdAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
         self.tableOrdAP_2.set_deco(Texttable.HEADER)
-        self.tableOrdAP_2.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableOrdAP_2.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableOrdAP_2.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableOrdAP_2.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
         self.tableSelected.set_deco(Texttable.HEADER)
-        self.tableSelected.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableSelected.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableSelected.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableSelected.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         #self.table.add_rows([ [get_color_string(color, essid), get_color_string(color, bssid), get_color_string(color, station), get_color_string(color, probe_req), get_color_string(color, auth), get_color_string(color, deauth), get_color_string(color, freq), get_color_string(color, hand_succ),get_color_string(color, hand_fail), get_color_string(color, corrupt)]])
 
         PrinterAP.HEADER[indexAP] = PrinterAP.HEADER_AP_TMP[indexAP]

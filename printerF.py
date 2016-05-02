@@ -11,9 +11,12 @@ class Printer:
         self.colorHeader = curses.A_BOLD
         self.colorHeader |= curses.color_pair(2)
         
-        self.height = height
         self.src = curses.newpad(height,300)
-    
+        #self.src.idcok(False)
+        #self.src.idlok(False)
+        #self.src.leaveok(True)
+        
+        self.height = height
         self.indexCursor = 0
         self.contInfoClient = 0
         self.pressedInfo = False
@@ -54,6 +57,10 @@ class Printer:
     
         
     def clear(self):
-        self.src.clear()
+        self.src.clrtobot()
+        self.src.clrtoeol()
+        self.src.erase()
+        #self.src.clear()
+        #self.src.redrawwin()
         
         
