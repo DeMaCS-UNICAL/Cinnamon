@@ -3,14 +3,14 @@
 import scapy
 from scapy.all import *
 
-import os, signal
-
-import argparse, sys, thread, time
-from time import sleep
+import os
 import printerInfo
-import detachPack
-import subprocess
-import saving
+import argparse, sys, signal
+import threading
+from threading import Thread
+
+import time
+from time import sleep
 
 class bcolors:
     HEADER = '\033[95m'
@@ -22,6 +22,7 @@ apPresent = {}
 monitors = []
 interfaces = {}
 
+folder = "CAPTURE/CAPT/"
 name = "CAPT-"
 extension = ".pcap"
 contFile = 1
@@ -62,6 +63,9 @@ def stopperCheck(p):
         return True
     return False
 
+def aaa():
+  subprocess.Popen(['tee a.pcap', "./monitoringAP.py -f a"], stdout=PIPE, stderr=DN, shell=True)
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='APMonitoring.py')
@@ -95,13 +99,32 @@ if __name__ == "__main__":
             #pid = args.pid
 
         if args.file != None:
+            import listener
+            import updateDisplay
+            import checkPrinter
             import interfaceScript
-            #printer = None
+            ##printer = None
             printer = printerInfo.PrinterInfo(1, "Thread1", 2)
-            printer.start()
+            #printer.start()
+            #checkPrint = checkPrinter.CheckPrinter(printer)
+            
+            listenerKey = listener.Listener(2, "Thread2", 2, printer)
+            listenerKey.start()
+            
             sniffPack = interfaceScript.SniffPackage(printer)
+            
+            #update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack, checkPrint)
+            #update.start()
 
-            sniff(offline=args.file, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
+            #fifo = open("path", "r")
+            #print "ciao"
+            #with open(fifo, mode='r', buffering=-1):
+                #print "ciao"
+            #with open(fifo, mode='r', buffering=1) as lines:
+                #for line in lines:
+            #sniff(offline="path", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
+            #sleep(1)
+            sniff(offline="a.pcap", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
             #os.kill(pid, signal.SIGKILL)
             #printer.endOfflineSniff(True)
             
@@ -115,6 +138,8 @@ if __name__ == "__main__":
 
                 os.system('stty sane')
             else:
+                
+                import subprocess
                 try:
                     subprocess.call("ifconfig "+ args.interface +" down", shell=True)
                     subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
@@ -123,6 +148,8 @@ if __name__ == "__main__":
                     sys.exit('Could not start monitor mode')
 
                 if args.save == True:
+                    import saving
+                    import detachPack
                     
                     nameFile = name+str(contFile)+extension
                     existFile = os.path.exists(nameFile)
@@ -134,12 +161,16 @@ if __name__ == "__main__":
                         
                     detachP = detachPack.DetachPack(nameFile)
                     
+                    thread = Thread(target=aaa)
+                    thread.start()
+                    
                     savingPack = saving.Saving(2, "Thread2", 2, detachP, args.interface)
                     savingPack.start()
                     
                     pid = os.getpid()
+                    #sleep(3)
                     #nameFile = "path.fifo"
-                    p = subprocess.call("./monitoringAP.py -f "+nameFile, shell=True)
+                    #p = subprocess.call("./monitoringAP.py -f "+nameFile, shell=True)
                     #os.killpg(os.getpgid(p.pid), signal.SIGTERM)
                     detachP.setStopSniff(True)
                     #os.system('stty sane')
@@ -147,17 +178,30 @@ if __name__ == "__main__":
                     #sys.exit(0)
                     
                 else:
+                    import listener
+                    import updateDisplay
+                    #import checkPrinter
                     import interfaceScript
                     ##printer = None
                     printer = printerInfo.PrinterInfo(1, "Thread1", 2)
-                    printer.start()
+                    #printer.start()
+                    #checkPrint = checkPrinter.CheckPrinter(printer)
+                    
+                    listenerKey = listener.Listener(2, "Thread2", 2, printer)
+                    listenerKey.start()
+                    
                     sniffPack = interfaceScript.SniffPackage(printer)
+                    
+                    #update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
+                    #update.start()
                     
                     if filterStr != "":
                         sniff(filter=filterStr, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
                     else:
                         sniff(iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
+    
+  
     
     #print "\nNUM AP: ", len(apPresent),"\n"
 

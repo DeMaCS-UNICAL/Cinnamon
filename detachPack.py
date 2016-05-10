@@ -19,14 +19,15 @@ class DetachPack:
         self.pktdump = PcapWriter(nameFile, append=True, sync=True)
         
         
-        #self.path = "path.fifo"
+        #self.path = "path"
         #os.mkfifo(self.path)
 
-        #fifo = open(path, "w")
+        #self.fifo = open(self.path, "w+")
+        #with open(self.fifo, mode='w', buffering=-1) as fb:
+        #self.pktdumpFifo = PcapWriter("path", append=True, sync=False)
         #fifo.write("Message from the sender!\n")
         #fifo.close()
         
-        #self.pktdumpFifo = PcapWriter(self.path, append=True, sync=True)
         
     def detach(self,p):
         
@@ -35,7 +36,7 @@ class DetachPack:
         #with gzip.open(self.path, 'wb') as f:
             #f.write(p)
         #self.pktdumpFifo.write(p)
-
+        #self.fifo.write(p)
     
     def setStopSniff(self, stopSniff):
         self.stopSniff = stopSniff

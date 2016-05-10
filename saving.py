@@ -15,7 +15,6 @@ class Saving (threading.Thread):
         self.stopSniff = False
         self.interface = interface
         
-
     def run(self):
         #while (not self.stopSniff):
         sniff(iface=self.interface, prn=self.detachPack.detach, stop_filter=self.isStopSniff)

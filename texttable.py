@@ -448,8 +448,12 @@ class Texttable:
         if not self._row_size:
             self._row_size = len(array)
         elif self._row_size != len(array):
-            raise ArraySizeError("array should contain %d elements" \
-                % self._row_size)
+            if self._row_size != None:
+                raise ArraySizeError("array should contain %d elements" \
+                    % self._row_size)
+            else:
+                raise ArraySizeError("array should contain more or plus elements")
+                
 
     def _has_vlines(self):
         """Return a boolean, if vlines are required or not
