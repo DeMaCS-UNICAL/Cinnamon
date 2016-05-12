@@ -63,6 +63,11 @@ def stopperCheck(p):
         return True
     return False
 
+def stopperCheck_2():
+    if printer.getStopSniff(): 
+        return True
+    return False
+
 def aaa():
   subprocess.Popen(['tee a.pcap', "./monitoringAP.py -f a"], stdout=PIPE, stderr=DN, shell=True)
 
@@ -101,7 +106,7 @@ if __name__ == "__main__":
         if args.file != None:
             import listener
             import updateDisplay
-            import checkPrinter
+            #import checkPrinter
             import interfaceScript
             ##printer = None
             printer = printerInfo.PrinterInfo(1, "Thread1", 2)
@@ -113,8 +118,17 @@ if __name__ == "__main__":
             
             sniffPack = interfaceScript.SniffPackage(printer)
             
-            #update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack, checkPrint)
-            #update.start()
+            #f = open(args.file, "r")
+            #d = f.readlines()
+            #f.seek(0)
+            #for i in d:
+                #print d
+                #print "\n"
+                #print "\n"
+            #f.close()
+            
+            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
+            update.start()
 
             #fifo = open("path", "r")
             #print "ciao"
@@ -124,9 +138,13 @@ if __name__ == "__main__":
                 #for line in lines:
             #sniff(offline="path", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
             #sleep(1)
-            sniff(offline="a.pcap", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
-            #os.kill(pid, signal.SIGKILL)
-            #printer.endOfflineSniff(True)
+            #while not stopperCheck_2():
+            sniff(offline=args.file, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
+            #f = open("cc.txt", "a")
+            #f.write("AAAAAAAA")
+            #f.close()
+            ##os.kill(pid, signal.SIGKILL)
+            ##printer.endOfflineSniff(True)
             
         if args.interface != None:
 
@@ -140,12 +158,12 @@ if __name__ == "__main__":
             else:
                 
                 import subprocess
-                try:
-                    subprocess.call("ifconfig "+ args.interface +" down", shell=True)
-                    subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
-                    subprocess.call("ifconfig "+ args.interface +" up", shell=True)
-                except Exception:
-                    sys.exit('Could not start monitor mode')
+                #try:
+                    #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
+                    #subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
+                    #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+                #except Exception:
+                    #sys.exit('Could not start monitor mode')
 
                 if args.save == True:
                     import saving
@@ -161,8 +179,8 @@ if __name__ == "__main__":
                         
                     detachP = detachPack.DetachPack(nameFile)
                     
-                    thread = Thread(target=aaa)
-                    thread.start()
+                    #thread = Thread(target=aaa)
+                    #thread.start()
                     
                     savingPack = saving.Saving(2, "Thread2", 2, detachP, args.interface)
                     savingPack.start()
@@ -170,7 +188,7 @@ if __name__ == "__main__":
                     pid = os.getpid()
                     #sleep(3)
                     #nameFile = "path.fifo"
-                    #p = subprocess.call("./monitoringAP.py -f "+nameFile, shell=True)
+                    p = subprocess.call("./monitoringAP.py -i "+args.interface, shell=True)
                     #os.killpg(os.getpgid(p.pid), signal.SIGTERM)
                     detachP.setStopSniff(True)
                     #os.system('stty sane')
@@ -192,13 +210,13 @@ if __name__ == "__main__":
                     
                     sniffPack = interfaceScript.SniffPackage(printer)
                     
-                    #update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
-                    #update.start()
+                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
+                    update.start()
                     
                     if filterStr != "":
-                        sniff(filter=filterStr, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
+                        sniff(filter=filterStr, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
                     else:
-                        sniff(iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
+                        sniff(iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
     
   

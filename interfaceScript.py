@@ -269,8 +269,8 @@ class SniffPackage:
             
             i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.associationRequest[(macAP,macClient)], self.associationResponce[(macAP,macClient)], self.disassociation[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.probeResponse[(macAP,macClient)], self.numPack[(macAP,macClient)], self.otherList[(macAP,macClient)]])
             
-            #self.info[i[1],i[2]] = i
-            self.printerInfo.addInfo(i)
+            self.info[i[1],i[2]] = i
+            #self.printerInfo.addInfo(i)
     
     
     def printInfoAP(self, essid, macAP, macClient):
@@ -285,8 +285,8 @@ class SniffPackage:
             
             i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], self.associationRequestAP[macAP], self.associationResponceAP[macAP], self.disassociationAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.probeResponseAP[macAP], self.numPackAP[macAP], self.otherListAP[macAP]])
             
-            #self.infoAP[i[1]] = i
-            self.printerInfo.addInfoAP(i)
+            self.infoAP[i[1]] = i
+            #self.printerInfo.addInfoAP(i)
             
     def printInfoClient(self, essid, macAP, macClient):
         if macAP != None and macClient != None:
@@ -300,8 +300,8 @@ class SniffPackage:
             
             i = tuple([essid, macAP, macClient, self.authentClient[macClient], self.deauthentClient[macClient], self.associationRequestClient[macClient], self.associationResponceClient[macClient], self.disassociationClient[macClient], "-", self.eapHandshakeSuccessClient[macClient], self.eapHandshakeFailedClient[macClient], self.corruptedPackClient[macClient], strPercentage, self.dataListClient[macClient], self.rtsListClient[macClient], self.ctsListClient[macClient], self.ackListClient[macClient], self.beaconClient[macClient],  self.probeRequestClient[macClient], self.probeResponseClient[macClient], self.numPackClient[macClient], self.otherListClient[macClient]])
             
-            #self.infoClient[i[2]] = i
-            self.printerInfo.addInfoClient(i)
+            self.infoClient[i[2]] = i
+            #self.printerInfo.addInfoClient(i)
     
     
     def takeInformation(self):
@@ -635,7 +635,8 @@ class SniffPackage:
                         macAP = p.addr1
                         macClient = p.addr2
                     else:
-                        if p.addr2 != p.addr3:
+                        #Per qualche ragione avevo messo p.addr2 != p.addr3 come condizione al primo if al posto di quello scritto ora... se dovesse servire
+                        if p.addr2 in self.apPresent:
                             macAP = p.addr2
                             macClient = p.addr1
                         else:

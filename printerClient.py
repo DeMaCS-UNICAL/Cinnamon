@@ -11,17 +11,17 @@ from texttable import Texttable
 class PrinterClient(printerF.Printer):
     
     HEIGHT_TABLE = 25
-    CONSTANT = 188
+    CONSTANT = 189
     
     
-    HEADER = [' STATION             ', ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DIS ',' PWR ',' HAND_S ',' HAND_F ',' COR ',' COR%',' DATA  ',' RTS ',' CTS ',' ACK',' BEAC  ', ' PR_RQ  ', ' PR_RP  ', ' TOT', ' OTHER']
+    HEADER = [' STATION'+" "*14, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
-    HEADER_CLIENT_2 = ['STATION            ', 'AUT','DEAUT','ASS_RQ','ASS_RP','DIS', 'PWR','HAND_S','HAND_F','COR','COR%','DATA','RTS','CTS','ACK','BEAC', 'PR_RQ  ', 'PR_RP', 'TOT', 'OTHER']
+    HEADER_CLIENT_2 = ['STATION'+" "*14, 'AUTH','DEAUTH','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER']
     
-    HEADER_CLIENT_TMP = [' STATION             ', ' AUT',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' PWR ',' HAND_S ',' HAND_F ',' COR ',' COR%',' DATA  ',' RTS ',' CTS ',' ACK',' BEAC  ', ' PR_RQ  ', ' PR_RP  ', ' TOT', ' OTHER']
+    HEADER_CLIENT_TMP = [' STATION'+" "*14, '  AUTH',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
    
-    HEADER_INFO_2 = ['ESSID                 ','BSSID              ','STATION            ','AUT  ','DEAUT ', 'ASS_RQ ',' ASS_RP  ',' DIS  ','PWR  ','HAND_S  ','HAND_F  ','COR  ','COR%  ','DATA  ','RTS  ','CTS  ','ACK  ','BEAC  ', 'PR_RQ  ', 'PR_RP ', 'TOT']
+    HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUTH  ','DEAUTH ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','PWR  ','HAND_S  ','HAND_F  ','CORR  ','CORR%  ','DATA  ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
     
     
     def __init__(self, height):
@@ -55,10 +55,7 @@ class PrinterClient(printerF.Printer):
         PrinterClient.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterClient.HEADER[self.indexHeaderAfter])
         
         self.src.addstr(0,0, str(PrinterClient.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
-        self.src.addstr(1,0, str("="*163))
-        #if not self.tupl:
-            #self.src.insstr(2, 0, self.tableOrdClient.draw())
-        #else:
+        self.src.addstr(1,0, str("="*173))
         if self.indexCursor > 0:
             self.src.addstr(2, 0, self.tableOrdClient.draw())
             if self.isSelected:
@@ -66,68 +63,64 @@ class PrinterClient(printerF.Printer):
             else:
                 self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
             if not self.pressedInfo:
-                #try:
-                self.src.addstr(2+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
-                self.src.addstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
-                #except Exception, e:
-                    #self.fileLog = open("log.log", "w+")
-                    #self.fileLog.write(str(e))
-                    #self.fileLog.close()
-                    #print str(e)
-                    #sys.exit(0)
-                    #self.src.insstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
+                try:
+                    self.src.addstr(2+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
+                    self.src.addstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
+                except Exception, e:
+                    self.fileLog = open("log.log", "w+")
+                    self.fileLog.write(str(e))
+                    self.fileLog.close()
             else:
-                #try:
-                self.tableInfo.draw().decode('utf-8')
-                self.src.addstr(2+self.indexCursor+1,0, str(" "*PrinterClient.CONSTANT))
-                self.src.addstr(2+self.indexCursor+2,0, str("-"*PrinterClient.CONSTANT))
-                self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
-                self.src.addstr(2+self.indexCursor+4,0, str("="*PrinterClient.CONSTANT))
-                self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
-                self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
+                try:
+                #self.tableInfo.draw().decode('utf-8')
+                    self.src.addstr(2+self.indexCursor+1,0, str(" "*PrinterClient.CONSTANT))
+                    self.src.addstr(2+self.indexCursor+2,0, str("-"*PrinterClient.CONSTANT))
+                    self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
+                    self.src.addstr(2+self.indexCursor+4,0, str("="*PrinterClient.CONSTANT))
+                    self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
+                    self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
                 #if self.contInfoClient < 2:
                     #self.src.addstr(7+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
-                self.src.addstr(7+self.indexCursor+self.contInfoClient,0, str("-"*PrinterClient.CONSTANT))
-                self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
+                    self.src.addstr(7+self.indexCursor+self.contInfoClient,0, str("-"*PrinterClient.CONSTANT))
+                    self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
                 #self.src.addstr(8+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
-                #except Exception, e:
-                    #self.fileLog = open("log.log", "w+")
-                    #self.fileLog.write(str(e)+"\n")
-                    #self.fileLog.close()
+                except Exception, e:
+                    self.fileLog = open("log.log", "w+")
+                    self.fileLog.write(str(e)+"\n")
+                    self.fileLog.close()
                     #self.tableInfo.draw().decode('utf-8')
                     
-                #self.src.addstr(7+self.contInfoClient+self.indexCursor,0, " "*PrinterClient.CONSTANT)
         else:
             if self.isSelected:
                 self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(4))
             else:
                 self.src.addstr(2, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
             if not self.pressedInfo:
-                #try:
-                self.src.addstr(3, 0, " "*PrinterClient.CONSTANT)
-                self.src.addstr(4, 0, self.tableOrdClient_2.draw())
-                #except Exception, e:
-                    #self.fileLog = open("log.log", "a")
-                    #self.fileLog.write(str(e))
-                    #self.fileLog.close()
+                try:
+                    self.src.addstr(3, 0, " "*PrinterClient.CONSTANT)
+                    self.src.addstr(4, 0, self.tableOrdClient_2.draw())
+                except Exception, e:
+                    self.fileLog = open("log.log", "a")
+                    self.fileLog.write(str(e))
+                    self.fileLog.close()
             else:
-                #try:
+                try:
                 #self.tableInfo.draw().decode('utf-8')
-                self.src.addstr(2+self.indexCursor+1,0, " "*PrinterClient.CONSTANT)
-                self.src.addstr(2+self.indexCursor+2,0, "-"*PrinterClient.CONSTANT)
-                self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
-                self.src.addstr(2+self.indexCursor+4,0, "="*PrinterClient.CONSTANT)
-                self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
-                #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, " "*PrinterClient.CONSTANT)
-                self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
-                #if self.contInfoClient < 2:
-                    #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
-                self.src.addstr(7+self.indexCursor+self.contInfoClient,0, "-"*PrinterClient.CONSTANT)
-                self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, " "*PrinterClient.CONSTANT)
-                #except Exception, e:
-                    #self.fileLog = open("log.log", "a")
-                    #self.fileLog.write(str(e)+"\n")
-                    #self.fileLog.close()
+                    self.src.addstr(2+self.indexCursor+1,0, " "*PrinterClient.CONSTANT)
+                    self.src.addstr(2+self.indexCursor+2,0, "-"*PrinterClient.CONSTANT)
+                    self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
+                    self.src.addstr(2+self.indexCursor+4,0, "="*PrinterClient.CONSTANT)
+                    self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
+                    #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, " "*PrinterClient.CONSTANT)
+                    self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
+                    #if self.contInfoClient < 2:
+                        #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
+                    self.src.addstr(7+self.indexCursor+self.contInfoClient,0, "-"*PrinterClient.CONSTANT)
+                    self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, " "*PrinterClient.CONSTANT)
+                except Exception, e:
+                    self.fileLog = open("log.log", "a")
+                    self.fileLog.write(str(e)+"\n")
+                    self.fileLog.close()
                     #self.tableInfo.draw().decode('utf-8')
                 #self.src.addstr(7+self.contInfoClient+self.indexCursor,0, " "*PrinterClient.CONSTANT)
                         
@@ -167,10 +160,10 @@ class PrinterClient(printerF.Printer):
     def createTable(self, header, indexClient):
         
         self.tableInfo.set_deco(Texttable.HEADER)
-        self.tableInfo.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableInfo.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableInfo.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableInfo.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
-        self.tableInfo.add_rows([[header[0], header[1], header[2], header[3], header[4], header[5], header[6], header[7], header[8], header[9], header[10], header[11], header[12], header[13], header[14], header[15], header[16], header[17], header[18], header[19], header[20]]])
+        self.tableInfo.add_rows([[header[0], header[1], header[2], header[3], header[4], header[5], header[6], header[7], header[8], header[9], header[10], header[11], header[12], header[13], header[14], header[15], header[16], header[17], header[18], header[19]]])
         
         
         self.init_table(self.tableOrdClient)
@@ -178,9 +171,7 @@ class PrinterClient(printerF.Printer):
         self.init_table(self.tableOrdClientSelect)
         
         PrinterClient.HEADER[indexClient] = PrinterClient.HEADER_CLIENT_TMP[indexClient]
-        #header_client[indexClient] = re.sub("^", ' ', header_client[indexClient])
         PrinterClient.HEADER[indexClient] = re.sub("^ ", '>', PrinterClient.HEADER[indexClient])
-        #header_client[indexClient] = header_client[indexClient] + ">"
 
         self.tableOrdClient.add_rows([PrinterClient.HEADER_CLIENT_2])
         self.tableOrdClient_2.add_rows([PrinterClient.HEADER_CLIENT_2])
@@ -190,8 +181,8 @@ class PrinterClient(printerF.Printer):
     
     def init_table(self, table):
         table.set_deco(Texttable.HEADER)
-        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
     
     
     def add_rows(self, tup, index):
@@ -211,10 +202,7 @@ class PrinterClient(printerF.Printer):
     def setMyPadPos(self, mypad_pos):
         self.mypad_pos_client = mypad_pos
 
-    def setIndexCursor(self, indexCursor, whatDo):
-        if whatDo == 0:
-            self.indexCursor = indexCursor
-        elif whatDo == 1:
-            self.indexCursor += indexCursor
-        elif whatDo == 2:
-            self.indexCursor -= indexCursor
+    def setIndexCursor(self, indexCursor):
+        self.indexCursor = indexCursor
+
+

@@ -10,14 +10,14 @@ from texttable import Texttable
 
 class PrinterAP(printerF.Printer):
     
-    CONSTANT = 183
+    CONSTANT = 188
     HEIGHT_TABLE = 25
     
-    HEADER_AP_2 = ['ESSID                  ','BSSID            ','AUT','DEAUT','ASS_RQ','ASS_RP','DIS','PWR','HAND_S','HAND_F','COR','COR%','DATA','RTS','CTS','ACK','BEAC', 'PR_PQ', 'PR_RP', 'TOT', 'OTHER']
+    HEADER_AP_2 = ['ESSID'+" "*18,'BSSID'+" "*13,'AUTH','DEAUTH','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_PQ', 'PROBE_RP', 'TOT_PACK']
     
-    HEADER = ['ESSID                  ',' BSSID             ',' AUT ',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DIS ',' PWR ',' HAND_S ',' HAND_F ',' COR ',' COR% ',' DATA ',' RTS ',' CTS ',' ACK',' BEAC  ', ' PR_RQ  ', ' PR_RP', ' TOT', ' OTHER']
+    HEADER = ['ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP', ' TOT_PACK']
     
-    HEADER_AP_TMP = [' ESSID                  ',' BSSID             ',' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' PWR ',' HAND_S ',' HAND_F ',' COR ',' COR% ',' DATA ',' RTS ',' CTS ',' ACK',' BEAC  ', ' PR_RQ  ', ' PR_RP', ' TOT', ' OTHER']
+    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP', ' TOT_PACK']
     
     
     def __init__(self, height):
@@ -34,7 +34,6 @@ class PrinterAP(printerF.Printer):
 
         self.indexHeaderFirst = 0
         self.indexHeaderAfter = 0
-
 
     
     def setIsSelected(self,isSelected):
@@ -59,17 +58,16 @@ class PrinterAP(printerF.Printer):
             
             self.src.addstr(2+self.indexCursor+1, 0, " "*PrinterAP.CONSTANT)
             self.src.addstr(2+self.indexCursor+2, 0, self.tableOrdAP_2.draw())
-            #self.src.addstr(2+self.indexCursor+2+self.dimTableAP_2, 0, "="*PrinterAP.CONSTANT)
+            self.src.addstr(2+self.indexCursor + self.dimTableAP_2 +2, 0, " "*PrinterAP.CONSTANT)
         else:
             try:
-                #self.tableSelected.draw().decode('utf-8')
                 if self.isSelected:
                     self.src.addstr(2, 0, self.tableSelected.draw(), curses.color_pair(4))
                 else:
                     self.src.addstr(2, 0, self.tableSelected.draw(), curses.color_pair(1))
                 self.src.addstr(3, 0, " "*PrinterAP.CONSTANT)
                 self.src.addstr(4, 0, self.tableOrdAP_2.draw())
-                #self.src.addstr(4+self.dimTableAP_2, 0, "="*PrinterAP.CONSTANT)
+                self.src.addstr(2+self.indexCursor + self.dimTableAP_2 +2, 0, " "*PrinterAP.CONSTANT)
             except:
                 fifo = open("b.txt", "w+")
                 fifo.write(self.tableSelected.draw())
@@ -103,24 +101,18 @@ class PrinterAP(printerF.Printer):
     
     def init_table(self, table):
         table.set_deco(Texttable.HEADER)
-        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
     
     
     
     def createTable(self, indexAP):
-        #self.tableOrdAP.reset()
-        #self.tableOrdAP_2.reset()
-        #self.tableSelected.reset()
-        
         self.init_table(self.tableOrdAP)
         self.init_table(self.tableOrdAP_2)
         self.init_table(self.tableSelected)
         
         PrinterAP.HEADER[indexAP] = PrinterAP.HEADER_AP_TMP[indexAP]
         PrinterAP.HEADER[indexAP] = re.sub("^ ", '>', PrinterAP.HEADER[indexAP])
-        #header_ap[indexAP] = re.sub("^ ", '>', header_ap[indexAP])
-        #header_ap[indexAP] = header_ap[indexAP] + ">"
         
         self.tableOrdAP.add_rows([PrinterAP.HEADER_AP_2])
         self.tableOrdAP_2.add_rows([PrinterAP.HEADER_AP_2])
@@ -147,10 +139,8 @@ class PrinterAP(printerF.Printer):
     def setMyPadPos(self, mypad_pos):
         self.mypad_pos_ap = mypad_pos
         
-    def setIndexCursor(self, indexCursor, whatDo):
-        if whatDo == 0:
-            self.indexCursor = indexCursor
-        elif whatDo == 1:
-            self.indexCursor += indexCursor
-        elif whatDo == 2:
-            self.indexCursor -= indexCursor
+    def setIndexCursor(self, indexCursor):
+        self.indexCursor = indexCursor
+
+
+
