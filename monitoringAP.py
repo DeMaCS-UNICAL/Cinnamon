@@ -22,6 +22,8 @@ apPresent = {}
 monitors = []
 interfaces = {}
 
+bssid = None
+
 folder = "CAPTURE/CAPT/"
 name = "CAPT-"
 extension = ".pcap"
@@ -71,6 +73,11 @@ def stopperCheck_2():
 def aaa():
   subprocess.Popen(['tee a.pcap', "./monitoringAP.py -f a"], stdout=PIPE, stderr=DN, shell=True)
 
+def filterFunc(p):
+    if p.addr1 == bssid or p.addr2 == bssid or p.addr3 == bssid:
+        return True
+    return False
+
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='APMonitoring.py')
@@ -96,7 +103,8 @@ if __name__ == "__main__":
             #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
         
         if args.bssid != None:
-            filterStr = "wlan src "+args.bssid+" or wlan dst "+args.bssid
+            bssid = args.bssid
+            #filterStr = "wlan src "+args.bssid+" or wlan dst "+args.bssid
             
         #def s():
         
@@ -127,7 +135,7 @@ if __name__ == "__main__":
                 #print "\n"
             #f.close()
             
-            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
+            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack)
             update.start()
 
             #fifo = open("path", "r")
@@ -198,23 +206,24 @@ if __name__ == "__main__":
                 else:
                     import listener
                     import updateDisplay
-                    #import checkPrinter
+                    import checkPrinter
                     import interfaceScript
                     ##printer = None
                     printer = printerInfo.PrinterInfo(1, "Thread1", 2)
                     #printer.start()
-                    #checkPrint = checkPrinter.CheckPrinter(printer)
+                    checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
+                    checkPrint.start()
                     
-                    listenerKey = listener.Listener(2, "Thread2", 2, printer)
+                    listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
                     listenerKey.start()
                     
                     sniffPack = interfaceScript.SniffPackage(printer)
                     
-                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.5, printer, sniffPack)
+                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack, checkPrint)
                     update.start()
                     
-                    if filterStr != "":
-                        sniff(filter=filterStr, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
+                    if bssid != None:
+                        sniff(lfilter=filterFunc, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
                     else:
                         sniff(iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)

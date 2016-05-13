@@ -2,15 +2,16 @@
 
 import threading, curses, sys
 import printerInfo
+import checkPrinter
 
 
 class Listener (threading.Thread):
     
-    def __init__(self, threadID, name, delay, printer):
+    def __init__(self, threadID, name, delay, printer, checkPrint):
         threading.Thread.__init__(self)
         
         self.printer = printer
-        
+        self.checkPrint = checkPrint
         self.src = curses.newpad(50,300)
         self.src.keypad(True)
         
@@ -22,6 +23,7 @@ class Listener (threading.Thread):
         cmd = ""
         while cmd != None:
             cmd = self.src.getch()
+            
             #f = open("cmd.txt", "a")
             #f.write(str(cmd)+"\n")
             #f.close()
@@ -51,7 +53,9 @@ class Listener (threading.Thread):
             elif cmd == ord('\t'):
                 self.printer.changeTable()
                 
-            self.printer.printInformation()                
+            self.checkPrint.setCanPrint()
+            
+            #self.printer.printInformation()                
             
             
             

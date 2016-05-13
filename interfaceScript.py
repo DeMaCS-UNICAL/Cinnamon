@@ -137,7 +137,9 @@ class SniffPackage:
         now = datetime.datetime.now()
         date = str(now.year)+str(now.month)+str(now.day)+"-"+str(now.hour)+"-"+str(now.minute)+"-"+str(now.second)
         self.titleLog = SniffPackage.FOLDER_LOG + date + SniffPackage.EXTENSION_LOG
-        self.fileLog = open(self.titleLog, "w+")
+        #self.fileLog = open(self.titleLog, "w+")
+        f = open("DISASS.txt", "w+")
+        f.close()
 
     def createArray(self,macAP, macClient):
         if (macAP,macClient) not in self.deauthent:
@@ -469,7 +471,7 @@ class SniffPackage:
             
             retry = p.FCfield & 0x8
         
-        if self.contForAP > 20:
+        if self.contForAP > 10:
             isCorrupted = self.checkFCS(p, from_DS, to_DS)
             if isCorrupted:
                 return
@@ -664,9 +666,24 @@ class SniffPackage:
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 10:   #DISASSOC
-                    macAP = p.addr2
-                    macClient = p.addr1
+                    #p.show()
+                    f = open("DISASS.txt", "w+")
+                    f.close()
+                    f = open("DISASS.txt", "a")
+                    f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
+                    
+                    if p.addr1 in self.apPresent:
+                        print "ENTRO NEL PRIMO IF"
+                        f.write("ENTRO NEL PRIMO IFFFF")
+                        macAP = p.addr1
+                        macClient = p.addr2
+                    else:
+                        print "ENTRO NEL SECONDO IF"
+                        f.write("ENTRO NEL SECONDO IFFFF")
+                        macAP = p.addr2
+                        macClient = p.addr1
                         
+                    f.close()
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_RESP)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
 

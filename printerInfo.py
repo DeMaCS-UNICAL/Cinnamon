@@ -18,9 +18,9 @@ class PrinterInfo ():
     HEIGHT_TABLE_AP = 25
     
     
-    HEADER_CLIENT = [' STATION'+" "*13, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT = [' STATION'+" "*13, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
-    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F  ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
     HEADER_INFO = ['ESSID'+" "*15,'BSSID'+" "*12,'AUTH','DEAUTH', 'ASS_RQ','ASS_RP','DISASS','PWR','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC','PROBE_PQ','PROBE_RP','TOT_PACK']
     
@@ -65,7 +65,7 @@ class PrinterInfo ():
         self.mypad_pos_client = 0
         self.mypad_pos_ap = 0
         
-        self.lock = threading.Lock()
+        #self.lock = threading.Lock()
         
         curses.initscr()
         curses.noecho()
@@ -276,15 +276,15 @@ class PrinterInfo ():
     
     def addInfo(self, i):
         self.info = i
-        self.printInformation()
+        #self.printInformation()
         
     def addInfoAP(self, i):
         self.infoAP = i
-        self.printInformation()
+        #self.printInformation()
         
     def addInfoClient(self, i):
         self.infoClient = i
-        self.printInformation()
+        #self.printInformation()
 
     
     def sortTable(self, info, infoAP, infoClient):
@@ -355,7 +355,7 @@ class PrinterInfo ():
         
 
     def printInformation(self):
-        self.lock.acquire()
+        #self.lock.acquire()
 
         if self.pauseSniff:
             self.sortTable(self.info_pause, self.infoAP_pause, self.infoClient_pause)
@@ -367,7 +367,7 @@ class PrinterInfo ():
             self.infoClient_pause = {k:v for k,v in self.infoClient.items()}
         
         self.update()
-        self.lock.release()
+        #self.lock.release()
     
     
     def createTable(self, header_client, header_ap):

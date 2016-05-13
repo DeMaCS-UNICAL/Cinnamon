@@ -14,14 +14,14 @@ class PrinterClient(printerF.Printer):
     CONSTANT = 189
     
     
-    HEADER = [' STATION'+" "*14, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER = [' STATION'+" "*14, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
     HEADER_CLIENT_2 = ['STATION'+" "*14, 'AUTH','DEAUTH','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER']
     
-    HEADER_CLIENT_TMP = [' STATION'+" "*14, '  AUTH',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT_TMP = [' STATION'+" "*14, ' AUTH',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
    
-    HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUTH  ','DEAUTH ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','PWR  ','HAND_S  ','HAND_F  ','CORR  ','CORR%  ','DATA  ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
+    HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUTH  ','DEAUTH ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','PWR  ','HAND_S  ','HAND_F ','CORR  ','CORR%  ','DATA   ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
     
     
     def __init__(self, height):
@@ -55,7 +55,7 @@ class PrinterClient(printerF.Printer):
         PrinterClient.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterClient.HEADER[self.indexHeaderAfter])
         
         self.src.addstr(0,0, str(PrinterClient.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
-        self.src.addstr(1,0, str("="*173))
+        self.src.addstr(1,0, str("="*175))
         if self.indexCursor > 0:
             self.src.addstr(2, 0, self.tableOrdClient.draw())
             if self.isSelected:

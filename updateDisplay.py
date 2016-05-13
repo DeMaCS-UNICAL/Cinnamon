@@ -2,7 +2,7 @@
 
 import interfaceScript
 import printerInfo
-#import checkPrinter
+import checkPrinter
 
 import threading
 
@@ -11,14 +11,14 @@ from time import sleep
 
 class UpdateDisplay (threading.Thread):
     
-    def __init__(self, threadID, name, delay, printer, sniffer):
+    def __init__(self, threadID, name, delay, printer, sniffer, checkPrint):
         threading.Thread.__init__(self)
         
         self.delay = delay
         
         self.printer = printer
         self.sniffer = sniffer
-        #self.checkPrint = checkPrint
+        self.checkPrint = checkPrint
         
         self.canPrint = False
         self.stopSniff = False
@@ -44,10 +44,12 @@ class UpdateDisplay (threading.Thread):
                 self.printer.addInfoAP(self.infoAP)
                 self.printer.addInfoClient(self.infoClient)
                 
+                self.checkPrint.setCanPrint()
+                
                 #self.printer.printInformation()
                 #self.checkPrint.setCanPrint()
                 #self.checkPrint.setBooleanAndPrint()
                 sleep(self.delay)
         
         self.stopSniff = True
-        self.printer.setStopSniff(self.stopSniff)
+

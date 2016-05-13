@@ -10,14 +10,14 @@ from texttable import Texttable
 
 class PrinterAP(printerF.Printer):
     
-    CONSTANT = 188
+    CONSTANT = 189
     HEIGHT_TABLE = 25
     
     HEADER_AP_2 = ['ESSID'+" "*18,'BSSID'+" "*13,'AUTH','DEAUTH','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_PQ', 'PROBE_RP', 'TOT_PACK']
     
-    HEADER = ['ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP', ' TOT_PACK']
+    HEADER = ['ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F  ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ ', ' PROBE_RP', ' TOT_PACK']
     
-    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP', ' TOT_PACK']
+    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S  ',' HAND_F ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ ', ' PROBE_RP', ' TOT_PACK']
     
     
     def __init__(self, height):
