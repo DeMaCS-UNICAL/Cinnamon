@@ -6,6 +6,7 @@ import texttable
 import printerF
 import printerClient
 import printerAP
+import printerHelp
 
 from texttable import Texttable
 
@@ -14,15 +15,15 @@ class PrinterInfo ():
     COLUMN_SIZE = 20
     COLUMN_SIZE_AP = 21
     
-    HEIGHT_TABLE_CLIENT = 20
+    HEIGHT_TABLE_CLIENT = 21
     HEIGHT_TABLE_AP = 25
     
     
-    HEADER_CLIENT = [' STATION'+" "*13, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT = [' STATION'+" "*13, ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
-    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUTH ',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F  ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
-    HEADER_INFO = ['ESSID'+" "*15,'BSSID'+" "*12,'AUTH','DEAUTH', 'ASS_RQ','ASS_RP','DISASS','PWR','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC','PROBE_PQ','PROBE_RP','TOT_PACK']
+    HEADER_INFO = ['ESSID'+" "*15,'BSSID'+" "*12,'AUT','DEAUT', 'ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','PWR','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC','PROBE_PQ','PROBE_RP','TOT_PACK']
     
 
     def __init__(self, threadID, name, delay):
@@ -58,6 +59,8 @@ class PrinterInfo ():
         self.tupl = []
         
         self.pressedInfo = False
+        self.reverseOrder_client = False
+        self.reverseOrder_ap = False
         self.endSniffOffline = False
         self.increase = 0
         
@@ -71,6 +74,13 @@ class PrinterInfo ():
         curses.noecho()
         curses.cbreak()
         
+        #LINES, COL = src.getmaxyx()
+        #LINES = 60
+        #t = open("H.txt","a")
+        #t.write(str(LINES)+" "+str(COL)+"\n")
+        #t.close()
+        #curses.resizeterm(LINES,COL)
+        
         curses.curs_set(0)
         
         curses.start_color()
@@ -83,12 +93,25 @@ class PrinterInfo ():
         
         self.printerClient = printerClient.PrinterClient(self.srcHeight+10)
         self.printerAP = printerAP.PrinterAP(self.srcHeight+10)
+        self.printerHelp = printerHelp.PrinterHelp(self.srcHeight+10)
         
         self.printerAP.createTable(self.indexOrdAP)
         self.printerClient.createTable(PrinterInfo.HEADER_INFO, self.indexOrdClient)
         
         #self.f = open('/dev/null', 'w')
     
+    
+    def reverseOrderTable(self):
+        if self.indexTable == 0:
+            if self.reverseOrder_client == True:
+                self.reverseOrder_client = False
+            else:
+                self.reverseOrder_client = True
+        else:
+            if self.reverseOrder_ap == True:
+                self.reverseOrder_ap = False
+            else:
+                self.reverseOrder_ap = True
     
     def changeTable(self):
         if self.indexTable == 0:
@@ -109,19 +132,14 @@ class PrinterInfo ():
             if self.indexCursorClient < len(info_tmp) -1:
                 self.indexCursorClient += 1
                 self.printerClient.setIndexCursor(self.indexCursorClient)
+
                 if not self.pressedInfo:
-                    if self.indexCursorClient > PrinterInfo.HEIGHT_TABLE_CLIENT - 3:
-                        self.mypad_pos_client += 1
-                    elif self.indexCursorClient > PrinterInfo.HEIGHT_TABLE_CLIENT:
-                        if self.mypad_pos_client > PrinterInfo.HEIGHT_TABLE_CLIENT + PrinterInfo.HEIGHT_TABLE_CLIENT/2:
-                            self.mypad_pos_client += 1
+                    if self.indexCursorClient > PrinterInfo.HEIGHT_TABLE_CLIENT + self.mypad_pos_client:
+                        self.mypad_pos_client += PrinterInfo.HEIGHT_TABLE_CLIENT - 1
                 else:
-                    if self.indexCursorClient > PrinterInfo.HEIGHT_TABLE_CLIENT - self.contInfoClient -6:
-                        if self.mypad_pos_client + self.contInfoClient < PrinterInfo.HEIGHT_TABLE_CLIENT:
-                            self.mypad_pos_client = self.mypad_pos_client + self.contInfoClient
-                        else:
-                            self.printerClient.resizeTable(self.srcHeight+ self.contInfoClient +7)
-                            self.mypad_pos_client = self.mypad_pos_client + self.contInfoClient
+                    if self.indexCursorClient + self.contInfoClient + 4 > PrinterInfo.HEIGHT_TABLE_CLIENT + self.mypad_pos_client:
+                        self.mypad_pos_client += PrinterInfo.HEIGHT_TABLE_CLIENT - 1 + self.contInfoClient - 4
+
                 self.printerClient.setMyPadPos(self.mypad_pos_client)
         else:
             if self.indexCursorAP == 2:
@@ -141,15 +159,13 @@ class PrinterInfo ():
             if self.indexCursorClient > 0:
                 self.indexCursorClient -= 1
                 self.printerClient.setIndexCursor(self.indexCursorClient)
-                if self.indexCursorClient > 2:
-                    if not self.pressedInfo:
-                        self.mypad_pos_client -= 1
-                    
-                    else: 
-                        self.mypad_pos_client -= self.contInfoClient
                 
-                if self.indexCursorClient <= 2:
-                    self.mypad_pos_client = 0
+                if self.indexCursorClient <= self.mypad_pos_client:
+                    if not self.pressedInfo:
+                        self.mypad_pos_client -= PrinterInfo.HEIGHT_TABLE_CLIENT - 1
+                    else:
+                        self.mypad_pos_client -= PrinterInfo.HEIGHT_TABLE_CLIENT - 1 - self.contInfoClient
+                        
                 self.printerClient.setMyPadPos(self.mypad_pos_client)
         else:
             if self.indexCursorAP > 0:
@@ -238,12 +254,15 @@ class PrinterInfo ():
         
         self.printerClient.refreshTable()
         self.printerAP.refreshTable()
+        self.printerHelp.refreshTable()
         
         self.printerClient.resizeTable(self.srcHeight+ 100)
         self.printerAP.resizeTable(self.srcHeight+ 100)
+        self.printerHelp.resizeTable(self.srcHeight+ 100)
         
         self.printerClient.drawTable()
         self.printerAP.drawTable()
+        self.printerHelp.drawTable()
         
         
         if self.stopSniff:
@@ -260,15 +279,27 @@ class PrinterInfo ():
     
     def sort_tableClient(self, col=0):
         if col != 0 and col != 6:
-            return sorted(self.table, key=operator.itemgetter(col), cmp=self.numericCompair)
+            if self.reverseOrder_client:
+                return sorted(self.table, key=operator.itemgetter(col), cmp=self.numericCompair, reverse = True)
+            else:
+                return sorted(self.table, key=operator.itemgetter(col), cmp=self.numericCompair)
         else:
-            return sorted(self.table, key=operator.itemgetter(col))
+            if self.reverseOrder_client:
+                return sorted(self.table, key=operator.itemgetter(col))
+            else:
+                return sorted(self.table, key=operator.itemgetter(col), reverse = True)
 
     def sort_tableAP(self, col=0):
-        if col != 0 and col != 1 and col != 7:
-            return sorted(self.tableAP, key=operator.itemgetter(col), cmp=self.numericCompair)
+        if col != 0 and col != 1 and col != 9:
+            if self.reverseOrder_ap:
+                return sorted(self.tableAP, key=operator.itemgetter(col), cmp=self.numericCompair, reverse = True)
+            else:
+                return sorted(self.tableAP, key=operator.itemgetter(col), cmp=self.numericCompair)
         else:
-            return sorted(self.tableAP, key=operator.itemgetter(col))
+            if self.reverseOrder_ap:
+                return sorted(self.tableAP, key=operator.itemgetter(col), reverse = True)
+            else:
+                return sorted(self.tableAP, key=operator.itemgetter(col))
     
     def numericCompair(self, x, y):
         return int(x) - int(y)
@@ -297,7 +328,10 @@ class PrinterInfo ():
         self.createTable(PrinterInfo.HEADER_CLIENT, PrinterInfo.HEADER_AP)
         
         for i in infoAP.keys():
-            tup2 = tuple([infoAP[i][0], infoAP[i][1], infoAP[i][3], infoAP[i][4], infoAP[i][5], infoAP[i][6], infoAP[i][7], infoAP[i][9], infoAP[i][10], infoAP[i][11], infoAP[i][12], infoAP[i][13], infoAP[i][14], infoAP[i][15], infoAP[i][16], infoAP[i][17], infoAP[i][18], infoAP[i][19], infoAP[i][20]])
+            essid = infoAP[i][0]
+            if essid == "":
+                essid = "-"
+            tup2 = tuple([essid, infoAP[i][1], infoAP[i][3], infoAP[i][4], infoAP[i][5], infoAP[i][6], infoAP[i][7], infoAP[i][9], infoAP[i][10], infoAP[i][11], infoAP[i][12], infoAP[i][13], infoAP[i][14], infoAP[i][15], infoAP[i][16], infoAP[i][17], infoAP[i][18], infoAP[i][19], infoAP[i][20], infoAP[i][21]])
             self.tableAP.add_rows([tup2],False)
         
         for i in infoClient.keys():
@@ -322,7 +356,7 @@ class PrinterInfo ():
         
         d = 0
         for i in self.sort_tableAP(self.indexOrdAP):
-            i[10] += "%"
+            i[11] += "%"
             
             tup = tuple([i])
             if tup != None:
@@ -372,10 +406,10 @@ class PrinterInfo ():
     
     def createTable(self, header_client, header_ap):
         self.tableAP.set_deco(Texttable.HEADER)
-        self.tableAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
-        self.tableAP.add_rows([[header_ap[0], header_ap[1], header_ap[2], header_ap[3], header_ap[4], header_ap[5], header_ap[6], header_ap[7], header_ap[8], header_ap[9], header_ap[10], header_ap[11], header_ap[12], header_ap[13],  header_ap[14], header_ap[15], header_ap[16], header_ap[17], header_ap[18]]])
+        self.tableAP.add_rows([[header_ap[0], header_ap[1], header_ap[2], header_ap[3], header_ap[4], header_ap[5], header_ap[6], header_ap[7], header_ap[8], header_ap[9], header_ap[10], header_ap[11], header_ap[12], header_ap[13],  header_ap[14], header_ap[15], header_ap[16], header_ap[17], header_ap[18], header_ap[19]]])
 
 
         self.table.set_deco(Texttable.HEADER)

@@ -53,7 +53,8 @@ class SniffPackage:
         self.essid = {}
         #channel = {}
 
-        self.frequence = {}
+        self.power = {}
+        self.powerAP = {}
 
         self.authent = {}
         self.authentAP = {}
@@ -152,8 +153,8 @@ class SniffPackage:
             self.associationResponce[(macAP,macClient)] = 0
         if (macAP,macClient) not in self.disassociation:
             self.disassociation[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.frequence:
-            self.frequence[(macAP,macClient)] = "-"
+        if (macAP,macClient) not in self.power:
+            self.power[(macAP,macClient)] = "-"
         if (macAP,macClient) not in self.eapHandshakeSuccess:
             self.eapHandshakeSuccess[(macAP,macClient)] = 0
         if (macAP,macClient) not in self.eapHandshakeFailed:
@@ -215,6 +216,8 @@ class SniffPackage:
             self.ackListAP[macAP] = 0
         if macAP not in self.otherListAP:
             self.otherListAP[macAP] = 0
+        if macAP not in self.powerAP:
+            self.powerAP[macAP] = "-"
             
     def createArrayClient(self, macClient):
         if macClient not in self.beaconClient:
@@ -254,10 +257,11 @@ class SniffPackage:
     
     
 
-    def checkFrequence(self,macAP, macClient,freq):
-        if freq != 0 and freq != None:
+    def checkFrequence(self,macAP, macClient, power):
+        if power != 0 and power != None:
             if macAP != SniffPackage.BROADCAST_ADDR:
-                self.frequence[(macAP,macClient)] = freq
+                self.power[(macAP,macClient)] = power
+                self.powerAP[macAP] = power
 
     def printInfo(self,essid,macAP,macClient):
         if macAP != None and macClient != None:
@@ -269,7 +273,7 @@ class SniffPackage:
             
             strPercentage = str(percentCorr)
             
-            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.associationRequest[(macAP,macClient)], self.associationResponce[(macAP,macClient)], self.disassociation[(macAP,macClient)], self.frequence[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.probeResponse[(macAP,macClient)], self.numPack[(macAP,macClient)], self.otherList[(macAP,macClient)]])
+            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.associationRequest[(macAP,macClient)], self.associationResponce[(macAP,macClient)], self.disassociation[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.power[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.probeResponse[(macAP,macClient)], self.numPack[(macAP,macClient)], self.otherList[(macAP,macClient)]])
             
             self.info[i[1],i[2]] = i
             #self.printerInfo.addInfo(i)
@@ -285,7 +289,7 @@ class SniffPackage:
             
             strPercentage = str(percentCorr)
             
-            i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], self.associationRequestAP[macAP], self.associationResponceAP[macAP], self.disassociationAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.probeResponseAP[macAP], self.numPackAP[macAP], self.otherListAP[macAP]])
+            i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], self.associationRequestAP[macAP], self.associationResponceAP[macAP], self.disassociationAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.powerAP[macAP],self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.probeResponseAP[macAP], self.numPackAP[macAP], self.otherListAP[macAP]])
             
             self.infoAP[i[1]] = i
             #self.printerInfo.addInfoAP(i)
@@ -633,6 +637,9 @@ class SniffPackage:
                     return
                 
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 11:   #AUTH
+                    #f = open("AUTH.txt", "a")
+                    #f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
+                    #f.close()
                     if retry == 0 and p.addr2 != p.addr3:
                         macAP = p.addr1
                         macClient = p.addr2
@@ -673,12 +680,12 @@ class SniffPackage:
                     f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
                     
                     if p.addr1 in self.apPresent:
-                        print "ENTRO NEL PRIMO IF"
+                        #print "ENTRO NEL PRIMO IF"
                         f.write("ENTRO NEL PRIMO IFFFF")
                         macAP = p.addr1
                         macClient = p.addr2
                     else:
-                        print "ENTRO NEL SECONDO IF"
+                        #print "ENTRO NEL SECONDO IF"
                         f.write("ENTRO NEL SECONDO IFFFF")
                         macAP = p.addr2
                         macClient = p.addr1
@@ -690,6 +697,9 @@ class SniffPackage:
                     return
                         
                 elif hasattr(p, 'type') and hasattr(p, 'subtype') and p.type == 0 and p.subtype == 12:   #DEAUTH
+                    #f = open("DEAUTH.txt", "a")
+                    #f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
+                    #f.close()
                     if p.addr1 in self.apPresent:
                         macAP = p.addr1
                         macClient = p.addr2

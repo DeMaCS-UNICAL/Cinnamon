@@ -13,7 +13,7 @@ class Printer:
         
         self.src = curses.newpad(height,300)
         self.src.nodelay(-1)
-
+        
         self.height = height
         self.indexCursor = 0
         self.contInfoClient = 0
@@ -21,6 +21,8 @@ class Printer:
         
         self.mypad_pos_client = 0
         self.mypad_pos_ap = 0
+        
+        
         
     
     def setPressedInfo(self, pressedInfo):

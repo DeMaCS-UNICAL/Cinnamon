@@ -30,7 +30,7 @@ extension = ".pcap"
 contFile = 1
 #pid = 0
 
-printer = printerInfo.PrinterInfo(1, "Thread2", 2)
+#printer = printerInfo.PrinterInfo(1, "Thread2", 2)
 #def tryThis(p):
     #a = str(p).encode('hex')
     #subprocess.call(a +"> a.txt", shell=True)
@@ -70,8 +70,8 @@ def stopperCheck_2():
         return True
     return False
 
-def aaa():
-  subprocess.Popen(['tee a.pcap', "./monitoringAP.py -f a"], stdout=PIPE, stderr=DN, shell=True)
+#def aaa():
+  #subprocess.Popen(['tee a.pcap', "./monitoringAP.py -f a"], stdout=PIPE, stderr=DN, shell=True)
 
 def filterFunc(p):
     if p.addr1 == bssid or p.addr2 == bssid or p.addr3 == bssid:
@@ -114,14 +114,16 @@ if __name__ == "__main__":
         if args.file != None:
             import listener
             import updateDisplay
-            #import checkPrinter
+            import checkPrinter
             import interfaceScript
             ##printer = None
             printer = printerInfo.PrinterInfo(1, "Thread1", 2)
             #printer.start()
             #checkPrint = checkPrinter.CheckPrinter(printer)
+            checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
+            checkPrint.start()
             
-            listenerKey = listener.Listener(2, "Thread2", 2, printer)
+            listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
             listenerKey.start()
             
             sniffPack = interfaceScript.SniffPackage(printer)
@@ -135,7 +137,7 @@ if __name__ == "__main__":
                 #print "\n"
             #f.close()
             
-            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack)
+            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack, checkPrint)
             update.start()
 
             #fifo = open("path", "r")

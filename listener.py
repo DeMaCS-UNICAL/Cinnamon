@@ -52,7 +52,8 @@ class Listener (threading.Thread):
                 self.printer.previousColumnOrd()
             elif cmd == ord('\t'):
                 self.printer.changeTable()
-                
+            elif cmd == ord("r"):
+                self.printer.reverseOrderTable()
             self.checkPrint.setCanPrint()
             
             #self.printer.printInformation()                

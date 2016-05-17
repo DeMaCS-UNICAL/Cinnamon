@@ -10,18 +10,18 @@ from texttable import Texttable
 
 class PrinterClient(printerF.Printer):
     
-    HEIGHT_TABLE = 25
-    CONSTANT = 189
+    HEIGHT_TABLE = 27
+    CONSTANT = 187
     
     
-    HEADER = [' STATION'+" "*14, ' AUTH',' DEAUTH ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER = [' STATION'+" "*14, ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
-    HEADER_CLIENT_2 = ['STATION'+" "*14, 'AUTH','DEAUTH','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER']
+    HEADER_CLIENT_2 = ['STATION'+" "*14, 'AUT','DEAUT','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER']
     
-    HEADER_CLIENT_TMP = [' STATION'+" "*14, ' AUTH',' DEAUTH ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT_TMP = [' STATION'+" "*14, ' AUT',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
     
    
-    HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUTH  ','DEAUTH ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','PWR  ','HAND_S  ','HAND_F ','CORR  ','CORR%  ','DATA   ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
+    HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUT  ','DEAUT ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','HAND_S  ','HAND_F  ','PWR ','CORR  ','CORR%   ','DATA  ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
     
     
     def __init__(self, height):
@@ -57,22 +57,17 @@ class PrinterClient(printerF.Printer):
         self.src.addstr(0,0, str(PrinterClient.HEADER).strip("[]").replace("'","").replace(",",""), self.colorHeader)
         self.src.addstr(1,0, str("="*175))
         if self.indexCursor > 0:
-            self.src.addstr(2, 0, self.tableOrdClient.draw())
-            if self.isSelected:
-                self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(4))
-            else:
-                self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
-            if not self.pressedInfo:
-                try:
+            try:
+                self.src.addstr(2, 0, self.tableOrdClient.draw())
+                if self.isSelected:
+                    self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(4))
+                else:
+                    self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
+                if not self.pressedInfo:
                     self.src.addstr(2+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
                     self.src.addstr(2+self.indexCursor+2, 0, self.tableOrdClient_2.draw())
-                except Exception, e:
-                    self.fileLog = open("log.log", "w+")
-                    self.fileLog.write(str(e))
-                    self.fileLog.close()
-            else:
-                try:
-                #self.tableInfo.draw().decode('utf-8')
+                else:
+                    #self.tableInfo.draw().decode('utf-8')
                     self.src.addstr(2+self.indexCursor+1,0, str(" "*PrinterClient.CONSTANT))
                     self.src.addstr(2+self.indexCursor+2,0, str("-"*PrinterClient.CONSTANT))
                     self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
@@ -84,28 +79,24 @@ class PrinterClient(printerF.Printer):
                     self.src.addstr(7+self.indexCursor+self.contInfoClient,0, str("-"*PrinterClient.CONSTANT))
                     self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
                 #self.src.addstr(8+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
-                except Exception, e:
-                    self.fileLog = open("log.log", "w+")
-                    self.fileLog.write(str(e)+"\n")
-                    self.fileLog.close()
                     #self.tableInfo.draw().decode('utf-8')
+            except Exception, e:
+                self.fileLog = open("log.log", "w+")
+                self.fileLog.write(str(e))
+                self.fileLog.close()
                     
         else:
-            if self.isSelected:
-                self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(4))
-            else:
-                self.src.addstr(2, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
-            if not self.pressedInfo:
-                try:
+            try:
+                if self.isSelected:
+                    self.src.addstr(2+self.indexCursor, 0, self.tableOrdClientSelect.draw(), curses.color_pair(4))
+                else:
+                    self.src.addstr(2, 0, self.tableOrdClientSelect.draw(), curses.color_pair(1))
+                if not self.pressedInfo:
                     self.src.addstr(3, 0, " "*PrinterClient.CONSTANT)
                     self.src.addstr(4, 0, self.tableOrdClient_2.draw())
-                except Exception, e:
-                    self.fileLog = open("log.log", "a")
-                    self.fileLog.write(str(e))
-                    self.fileLog.close()
-            else:
-                try:
-                #self.tableInfo.draw().decode('utf-8')
+                else:
+                    #try:
+                    #self.tableInfo.draw().decode('utf-8')
                     self.src.addstr(2+self.indexCursor+1,0, " "*PrinterClient.CONSTANT)
                     self.src.addstr(2+self.indexCursor+2,0, "-"*PrinterClient.CONSTANT)
                     self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
@@ -117,12 +108,16 @@ class PrinterClient(printerF.Printer):
                         #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
                     self.src.addstr(7+self.indexCursor+self.contInfoClient,0, "-"*PrinterClient.CONSTANT)
                     self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, " "*PrinterClient.CONSTANT)
-                except Exception, e:
-                    self.fileLog = open("log.log", "a")
-                    self.fileLog.write(str(e)+"\n")
-                    self.fileLog.close()
+                #except Exception, e:
+                    #self.fileLog = open("log.log", "a")
+                    #self.fileLog.write(str(e)+"\n")
+                    #self.fileLog.close()
                     #self.tableInfo.draw().decode('utf-8')
                 #self.src.addstr(7+self.contInfoClient+self.indexCursor,0, " "*PrinterClient.CONSTANT)
+            except Exception, e:
+                self.fileLog = open("log.log", "a")
+                self.fileLog.write(str(e))
+                self.fileLog.close()
                         
     
     def cleanRow(self):
@@ -138,8 +133,13 @@ class PrinterClient(printerF.Printer):
 
     
     def refreshTable(self):
-        self.src.refresh(self.mypad_pos_client, 0, 0, 0, PrinterClient.HEIGHT_TABLE, 190)
-        
+        try:
+            self.src.refresh(self.mypad_pos_client, 0, 0, 0, PrinterClient.HEIGHT_TABLE, 190)
+        except Exception, e:
+            self.fileLog = open("log.log", "a")
+            self.fileLog.write(str(e))
+            self.fileLog.close()
+            
     
     def resizeTable(self, height):
         self.height = height
