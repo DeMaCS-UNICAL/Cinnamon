@@ -41,7 +41,7 @@ class Message(Enum):
     OTHER = "16"
 
 
-class SniffPackage:
+class AnalyzePackage:
     
     BROADCAST_ADDR = "ff:ff:ff:ff:ff:ff"
     EXTENSION_LOG = ".log"
@@ -137,7 +137,7 @@ class SniffPackage:
         
         now = datetime.datetime.now()
         date = str(now.year)+str(now.month)+str(now.day)+"-"+str(now.hour)+"-"+str(now.minute)+"-"+str(now.second)
-        self.titleLog = SniffPackage.FOLDER_LOG + date + SniffPackage.EXTENSION_LOG
+        self.titleLog = AnalyzePackage.FOLDER_LOG + date + AnalyzePackage.EXTENSION_LOG
         #self.fileLog = open(self.titleLog, "w+")
         f = open("DISASS.txt", "w+")
         f.close()
@@ -259,7 +259,7 @@ class SniffPackage:
 
     def checkFrequence(self,macAP, macClient, power):
         if power != 0 and power != None:
-            if macAP != SniffPackage.BROADCAST_ADDR:
+            if macAP != AnalyzePackage.BROADCAST_ADDR:
                 self.power[(macAP,macClient)] = power
                 self.powerAP[macAP] = power
 
@@ -280,7 +280,7 @@ class SniffPackage:
     
     
     def printInfoAP(self, essid, macAP, macClient):
-        if macAP != None and macAP != SniffPackage.BROADCAST_ADDR and macClient != None:
+        if macAP != None and macAP != AnalyzePackage.BROADCAST_ADDR and macClient != None:
             if (macAP) not in self.probeRequestAP:
                 self.probeRequestAP[macAP] = 0
 
@@ -491,12 +491,12 @@ class SniffPackage:
                     self.essid[p.addr3] = p.info
                     self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                 
-                if from_DS and not to_DS and p.addr3 != SniffPackage.BROADCAST_ADDR and p.addr1 != SniffPackage.BROADCAST_ADDR:
+                if from_DS and not to_DS and p.addr3 != AnalyzePackage.BROADCAST_ADDR and p.addr1 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr3)
                     self.createArray(key, p.addr1)
                     self.checkFrequence(key, p.addr1,p.dBm_AntSignal)
 
-                elif not from_DS and to_DS and p.addr2 != SniffPackage.BROADCAST_ADDR:
+                elif not from_DS and to_DS and p.addr2 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr1)
                     if key in self.apPresent:
                         self.createArray(key, p.addr2)
@@ -673,33 +673,21 @@ class SniffPackage:
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 10:   #DISASSOC
-                    #p.show()
-                    f = open("DISASS.txt", "w+")
-                    f.close()
-                    f = open("DISASS.txt", "a")
                     f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
                     
                     if p.addr1 in self.apPresent:
-                        #print "ENTRO NEL PRIMO IF"
-                        f.write("ENTRO NEL PRIMO IFFFF")
                         macAP = p.addr1
                         macClient = p.addr2
                     else:
-                        #print "ENTRO NEL SECONDO IF"
-                        f.write("ENTRO NEL SECONDO IFFFF")
                         macAP = p.addr2
                         macClient = p.addr1
                         
-                    f.close()
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_RESP)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
 
                     return
                         
                 elif hasattr(p, 'type') and hasattr(p, 'subtype') and p.type == 0 and p.subtype == 12:   #DEAUTH
-                    #f = open("DEAUTH.txt", "a")
-                    #f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
-                    #f.close()
                     if p.addr1 in self.apPresent:
                         macAP = p.addr1
                         macClient = p.addr2
@@ -765,7 +753,6 @@ class SniffPackage:
                             self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER)
-                            #self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
                         else:
                             if p.addr1 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER, False)

@@ -115,7 +115,7 @@ if __name__ == "__main__":
             import listener
             import updateDisplay
             import checkPrinter
-            import interfaceScript
+            import analyzePackage
             ##printer = None
             printer = printerInfo.PrinterInfo(1, "Thread1", 2)
             #printer.start()
@@ -126,7 +126,7 @@ if __name__ == "__main__":
             listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
             listenerKey.start()
             
-            sniffPack = interfaceScript.SniffPackage(printer)
+            analyzePack = analyzePackage.AnalyzePackage(printer)
             
             #f = open(args.file, "r")
             #d = f.readlines()
@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 #print "\n"
             #f.close()
             
-            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack, checkPrint)
+            update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
             update.start()
 
             #fifo = open("path", "r")
@@ -149,7 +149,7 @@ if __name__ == "__main__":
             #sniff(offline="path", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
             #sleep(1)
             #while not stopperCheck_2():
-            sniff(offline=args.file, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
+            sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #f = open("cc.txt", "a")
             #f.write("AAAAAAAA")
             #f.close()
@@ -209,7 +209,7 @@ if __name__ == "__main__":
                     import listener
                     import updateDisplay
                     import checkPrinter
-                    import interfaceScript
+                    import analyzePackage
                     ##printer = None
                     printer = printerInfo.PrinterInfo(1, "Thread1", 2)
                     #printer.start()
@@ -219,15 +219,15 @@ if __name__ == "__main__":
                     listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
                     listenerKey.start()
                     
-                    sniffPack = interfaceScript.SniffPackage(printer)
+                    analyzePack = analyzePackage.AnalyzePackage(printer)
                     
-                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, sniffPack, checkPrint)
+                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
                     update.start()
                     
                     if bssid != None:
-                        sniff(lfilter=filterFunc, iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
+                        sniff(lfilter=filterFunc, iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
                     else:
-                        sniff(iface=args.interface, prn=sniffPack.sniffmgmt, stop_filter=stopperCheck, store=0)
+                        sniff(iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
     
   

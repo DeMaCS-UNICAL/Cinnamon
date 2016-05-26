@@ -16,7 +16,7 @@ class PrinterHelp(printerF.Printer):
         
 
     def drawTable(self):
-        self.src.addstr(0,0, "q = Exit\tTab = Change Selected Table\tr = Reverse Order Table\t\t> = Order Table Next Column\t< = Order Table Previous Column", curses.color_pair(1))
+        self.src.addstr(0,0, "q = Exit   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info    - = Remove Info", curses.color_pair(1))
         #self.src.addstr(1,0, "> = Order Table Next Column\t< = Order Table Previous Column")
         
     def refreshTable(self):

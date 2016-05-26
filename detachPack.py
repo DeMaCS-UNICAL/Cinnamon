@@ -4,9 +4,6 @@ import scapy
 from scapy.all import *
 
 import copy, sys
-import os.path
-import os
-import gzip
 
 
 class DetachPack:

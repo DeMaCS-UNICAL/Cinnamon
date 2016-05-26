@@ -236,12 +236,6 @@ class PrinterInfo ():
                 self.printerAP.resetHeaderIndex(self.indexOrdAP)
                 self.indexOrdAP -= 1
                 self.printerAP.setIndexHeader(self.indexOrdAP)
-
-    def changeTable(self):
-        if self.indexTable == 0:
-            self.indexTable = 1
-        else:
-            self.indexTable = 0
         
     
     def update(self):

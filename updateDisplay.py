@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import interfaceScript
+import analyzePackage
 import printerInfo
 import checkPrinter
 
@@ -11,13 +11,13 @@ from time import sleep
 
 class UpdateDisplay (threading.Thread):
     
-    def __init__(self, threadID, name, delay, printer, sniffer, checkPrint):
+    def __init__(self, threadID, name, delay, printer, analyzePack, checkPrint):
         threading.Thread.__init__(self)
         
         self.delay = delay
         
         self.printer = printer
-        self.sniffer = sniffer
+        self.analyzePack = analyzePack
         self.checkPrint = checkPrint
         
         self.canPrint = False
@@ -36,9 +36,9 @@ class UpdateDisplay (threading.Thread):
             
             if not self.printer.getPauseSniff():
             #if self.canPrint:
-                self.info = self.sniffer.takeInformation()
-                self.infoAP = self.sniffer.takeInformationAP()
-                self.infoClient = self.sniffer.takeInformationClient()
+                self.info = self.analyzePack.takeInformation()
+                self.infoAP = self.analyzePack.takeInformationAP()
+                self.infoClient = self.analyzePack.takeInformationClient()
                 
                 self.printer.addInfo(self.info)
                 self.printer.addInfoAP(self.infoAP)
