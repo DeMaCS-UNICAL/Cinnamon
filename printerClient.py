@@ -50,6 +50,7 @@ class PrinterClient(printerF.Printer):
         self.isSelected = isSelected
     
     def drawTable(self):
+        self.clear()
         
         PrinterClient.HEADER[self.indexHeaderFirst] = PrinterClient.HEADER_CLIENT_TMP[self.indexHeaderFirst]
         PrinterClient.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterClient.HEADER[self.indexHeaderAfter])
@@ -73,11 +74,11 @@ class PrinterClient(printerF.Printer):
                     self.src.addstr(2+self.indexCursor+3, 0, str(PrinterClient.HEADER_INFO_2).strip("[]").replace("'","").replace(",","") , curses.color_pair(3))
                     self.src.addstr(2+self.indexCursor+4,0, str("="*PrinterClient.CONSTANT))
                     self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
-                    self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
                 #if self.contInfoClient < 2:
                     #self.src.addstr(7+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
                     self.src.addstr(7+self.indexCursor+self.contInfoClient,0, str("-"*PrinterClient.CONSTANT))
-                    self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
+                    self.src.addstr(10+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
+                    #self.src.addstr(8+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
                 #self.src.addstr(8+self.contInfoClient+self.indexCursor+1, 0, str(" "*PrinterClient.CONSTANT))
                     #self.tableInfo.draw().decode('utf-8')
             except Exception, e:
@@ -103,11 +104,11 @@ class PrinterClient(printerF.Printer):
                     self.src.addstr(2+self.indexCursor+4,0, "="*PrinterClient.CONSTANT)
                     self.src.addstr(4+self.indexCursor+3, 0, self.tableInfo.draw())
                     #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, " "*PrinterClient.CONSTANT)
-                    self.src.addstr(9+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
                     #if self.contInfoClient < 2:
                         #self.src.addstr(6+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
-                    self.src.addstr(7+self.indexCursor+self.contInfoClient,0, "-"*PrinterClient.CONSTANT)
-                    self.src.addstr(7+self.contInfoClient+self.indexCursor+1, 0, " "*PrinterClient.CONSTANT)
+                    self.src.addstr(7+self.indexCursor+self.contInfoClient, 0, str("-"*PrinterClient.CONSTANT))
+                    self.src.addstr(10+self.contInfoClient+self.indexCursor, 0, self.tableOrdClient_2.draw())
+                    #self.src.addstr(8+self.contInfoClient+self.indexCursor, 0, str(" "*PrinterClient.CONSTANT))
                 #except Exception, e:
                     #self.fileLog = open("log.log", "a")
                     #self.fileLog.write(str(e)+"\n")
@@ -121,12 +122,16 @@ class PrinterClient(printerF.Printer):
                         
     
     def cleanRow(self):
-        if self.indexCursor < PrinterClient.HEIGHT_TABLE:
-            start = self.dimTableClient + self.dimTableClient_2 + 1
-            end = PrinterClient.HEIGHT_TABLE + start + 10
-            for i in range(start, end):
-                self.src.addstr(i, 0, " "*PrinterClient.CONSTANT)
-
+        try:
+            if self.indexCursor < PrinterClient.HEIGHT_TABLE:
+                start = self.dimTableClient + self.dimTableClient_2 + 1
+                end = PrinterClient.HEIGHT_TABLE + start + 10
+                for i in range(start, end):
+                    self.src.addstr(i, 0, " "*PrinterClient.CONSTANT)
+        except Exception, e:
+            self.fileLog = open("log.log", "a")
+            self.fileLog.write(str(e))
+            self.fileLog.close()
     
     def resetHeaderIndex(self, index):
         PrinterClient.HEADER[index] = PrinterClient.HEADER_CLIENT_TMP[index]

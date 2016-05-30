@@ -127,7 +127,7 @@ class PrinterInfo ():
             else:
                 info_tmp = self.infoClient_pause
             
-            if self.indexCursorClient == 2:
+            if self.indexCursorClient < 2:
                 self.mypad_pos_client = 0
             if self.indexCursorClient < len(info_tmp) -1:
                 self.indexCursorClient += 1
@@ -137,8 +137,8 @@ class PrinterInfo ():
                     if self.indexCursorClient > PrinterInfo.HEIGHT_TABLE_CLIENT + self.mypad_pos_client:
                         self.mypad_pos_client += PrinterInfo.HEIGHT_TABLE_CLIENT - 1
                 else:
-                    if self.indexCursorClient + self.contInfoClient + 4 > PrinterInfo.HEIGHT_TABLE_CLIENT + self.mypad_pos_client:
-                        self.mypad_pos_client += PrinterInfo.HEIGHT_TABLE_CLIENT - 1 + self.contInfoClient - 4
+                    if self.indexCursorClient + self.contInfoClient + 5 > PrinterInfo.HEIGHT_TABLE_CLIENT + self.mypad_pos_client:
+                        self.mypad_pos_client += PrinterInfo.HEIGHT_TABLE_CLIENT - 1 + self.contInfoClient - 5
 
                 self.printerClient.setMyPadPos(self.mypad_pos_client)
         else:
@@ -183,7 +183,7 @@ class PrinterInfo ():
             self.pressedInfo = True
             self.printerClient.setPressedInfo(self.pressedInfo)
             self.contInfoClient = 0
-            self.printerClient.setContInfoClient(self.contInfoClient)
+            #self.printerClient.setContInfoClient(self.contInfoClient)
             noRepeat = {}
             
             if self.pressedInfo:
@@ -207,7 +207,7 @@ class PrinterInfo ():
     def removeInfo(self):
         #self.printerClient.clear()
         if self.indexTable == 0:
-            self.printerClient.cleanRow()
+            #self.printerClient.cleanRow()
             self.contInfoClient = 0
             self.printerClient.setContInfoClient(self.contInfoClient)
             self.pressedInfo = False
@@ -279,9 +279,9 @@ class PrinterInfo ():
                 return sorted(self.table, key=operator.itemgetter(col), cmp=self.numericCompair)
         else:
             if self.reverseOrder_client:
-                return sorted(self.table, key=operator.itemgetter(col))
-            else:
                 return sorted(self.table, key=operator.itemgetter(col), reverse = True)
+            else:
+                return sorted(self.table, key=operator.itemgetter(col))
 
     def sort_tableAP(self, col=0):
         if col != 0 and col != 1 and col != 9:

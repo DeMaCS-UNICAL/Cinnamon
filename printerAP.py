@@ -44,6 +44,8 @@ class PrinterAP(printerF.Printer):
         self.indexHeaderAfter = index
         
     def drawTable(self):
+        self.clear()
+        
         PrinterAP.HEADER[self.indexHeaderFirst] = PrinterAP.HEADER_AP_TMP[self.indexHeaderFirst]
         PrinterAP.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterAP.HEADER[self.indexHeaderAfter])
         

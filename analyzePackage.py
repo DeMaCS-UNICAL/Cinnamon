@@ -295,7 +295,7 @@ class AnalyzePackage:
             #self.printerInfo.addInfoAP(i)
             
     def printInfoClient(self, essid, macAP, macClient):
-        if macAP != None and macClient != None:
+        if macAP != None and macClient != None and macClient != "":
             if (macClient) not in self.probeRequestClient:
                 self.probeRequestClient[macClient] = 0
             
@@ -454,7 +454,7 @@ class AnalyzePackage:
 
         if increaseNumPack:
             self.numPackAP[macAP] += 1
-            
+        
         self.numPackClient[macClient] += 1
         self.numPack[(macAP, macClient)] += 1
         
@@ -673,8 +673,6 @@ class AnalyzePackage:
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 10:   #DISASSOC
-                    f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
-                    
                     if p.addr1 in self.apPresent:
                         macAP = p.addr1
                         macClient = p.addr2
@@ -776,7 +774,7 @@ class AnalyzePackage:
                     self.apPresent.insert(0,p.addr3)
                     #self.apPresent[p.addr3] = []
                 self.essid[p.addr3] = p.info
-                #self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.NUM_PACK)
+                self.createArrayAndUpdateInfo(p.addr3, "", Message.NUM_PACK)
                 self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
                 self.contForAP += 1
             
