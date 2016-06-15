@@ -99,3 +99,6 @@ class AnalyzeDatas:
         
         DATA.close()
         
+
+
+
