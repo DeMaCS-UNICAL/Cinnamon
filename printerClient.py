@@ -14,11 +14,11 @@ class PrinterClient(printerF.Printer):
     CONSTANT = 187
     
     
-    HEADER = [' STATION'+" "*14, ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER = [' STATION'+" "*14, ' CH', ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER', ' CONT']
     
-    HEADER_CLIENT_2 = ['STATION'+" "*14, 'AUT','DEAUT','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER']
+    HEADER_CLIENT_2 = ['STATION'+" "*14, 'CH', 'AUT','DEAUT','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_RQ  ', 'PROBE_RP', 'TOT_PACK', 'OTHER','CONT']
     
-    HEADER_CLIENT_TMP = [' STATION'+" "*14, ' AUT',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT_TMP = [' STATION'+" "*14, ' CH', ' AUT', ' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_RQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER', ' CONT']
     
    
     HEADER_INFO_2 = ['ESSID'+" "*17,'BSSID'+" "*14,'AUT  ','DEAUT ', 'ASS_RQ ',' ASS_RP  ',' DISASS  ','HAND_S  ','HAND_F  ','PWR ','CORR  ','CORR%   ','DATA  ','RTS   ','CTS   ','ACK   ','BEAC  ', 'PROBE_RQ  ', 'PROBE_RP ', 'TOT_PACK']
@@ -35,11 +35,13 @@ class PrinterClient(printerF.Printer):
         self.dimTableInfo = 0
         self.dimTableClient = 0
         self.dimTableClient_2 = 0
+        self.selected = 0
         
         self.isSelected = False
         
         self.indexHeaderFirst = 0
         self.indexHeaderAfter = 0
+        
         
     
     def setIndexHeader(self, index):
@@ -50,8 +52,10 @@ class PrinterClient(printerF.Printer):
         self.isSelected = isSelected
     
     def drawTable(self):
+        PrinterClient.HEADER[20] = "CONT = "
+        PrinterClient.HEADER[20] += str(self.dimTableClient+self.dimTableClient_2+self.selected)
         self.clear()
-        
+
         PrinterClient.HEADER[self.indexHeaderFirst] = PrinterClient.HEADER_CLIENT_TMP[self.indexHeaderFirst]
         PrinterClient.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterClient.HEADER[self.indexHeaderAfter])
         
@@ -139,6 +143,8 @@ class PrinterClient(printerF.Printer):
     
     def refreshTable(self):
         try:
+            LINES, COL = self.src.getmaxyx()
+        
             self.src.refresh(self.mypad_pos_client, 0, 0, 0, PrinterClient.HEIGHT_TABLE, 190)
         except Exception, e:
             self.fileLog = open("log.log", "a")
@@ -186,13 +192,14 @@ class PrinterClient(printerF.Printer):
     
     def init_table(self, table):
         table.set_deco(Texttable.HEADER)
-        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
     
     
     def add_rows(self, tup, index):
         if index == 0:
             self.tableOrdClientSelect.add_rows(tup, False)
+            self.selected = 1
         elif index == 1:
             self.tableOrdClient.add_rows(tup, False)
             self.dimTableClient += 1

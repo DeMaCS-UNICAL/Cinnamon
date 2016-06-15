@@ -51,80 +51,63 @@ class AnalyzePackage:
         self.apPresent = []
 
         self.essid = {}
-        #channel = {}
+        self.channel = {}
 
         self.power = {}
         self.powerAP = {}
 
+        self.authentInfo = {}
         self.authent = {}
-        self.authentAP = {}
-        self.authentClient = {}
         
+        self.associationRequestInfo = {}
         self.associationRequest = {}
-        self.associationRequestAP = {}
-        self.associationRequestClient = {}
         
+        self.associationResponceInfo = {}
         self.associationResponce = {}
-        self.associationResponceAP = {}
-        self.associationResponceClient = {}
 
+        self.disassociationInfo = {}
         self.disassociation = {}
-        self.disassociationAP = {}
-        self.disassociationClient = {}
         
+        self.deauthentInfo = {}
         self.deauthent = {}
-        self.deauthentAP = {}
-        self.deauthentClient = {}
         
+        self.probeRequestInfo = {}
         self.probeRequest = {}
-        self.probeRequestAP = {}
-        self.probeRequestClient = {}
         
+        self.probeResponseInfo = {}
         self.probeResponse = {}
-        self.probeResponseAP = {}
-        self.probeResponseClient = {}
         
+        self.eapHandshakeSuccessInfo = {}
         self.eapHandshakeSuccess = {}
-        self.eapHandshakeSuccessAP = {}
-        self.eapHandshakeSuccessClient = {}
         
+        self.eapHandshakeFailedInfo = {}
         self.eapHandshakeFailed = {}
-        self.eapHandshakeFailedAP = {}
-        self.eapHandshakeFailedClient = {}
         
+        self.corruptedPackInfo = {}
         self.corruptedPack = {}
-        self.corruptedPackAP = {}
-        self.corruptedPackClient = {}
 
         self.eapRequest = {}
         
+        self.rtsListInfo = {}
         self.rtsList = {}
-        self.rtsListAP = {}
-        self.rtsListClient = {}
         
+        self.ctsListInfo = {}
         self.ctsList = {}
-        self.ctsListAP = {}
-        self.ctsListClient = {}
         
+        self.dataListInfo = {}
         self.dataList = {}
-        self.dataListAP = {}
-        self.dataListClient = {}
         
+        self.ackListInfo = {}
         self.ackList = {}
-        self.ackListAP = {}
-        self.ackListClient = {}
         
-        self.beaconList = {}
-        self.beaconAP = {}
-        self.beaconClient = {}
+        self.beaconListInfo = {}
+        self.beacon = {}
         
+        self.numPackInfo = {}
         self.numPack = {}
-        self.numPackAP = {}
-        self.numPackClient = {}
         
+        self.otherListInfo = {}
         self.otherList = {}
-        self.otherListAP = {}
-        self.otherListClient = {}
         
         self.cont = 0
         self.printerInfo = printerInfo
@@ -142,119 +125,84 @@ class AnalyzePackage:
         f = open("DISASS.txt", "w+")
         f.close()
 
-    def createArray(self,macAP, macClient):
-        if (macAP,macClient) not in self.deauthent:
-            self.deauthent[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.authent:
-            self.authent[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.associationRequest:
-            self.associationRequest[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.associationResponce:
-            self.associationResponce[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.disassociation:
-            self.disassociation[(macAP,macClient)] = 0
+    def createArrayInfo(self,macAP, macClient):
+        if (macAP,macClient) not in self.deauthentInfo:
+            self.deauthentInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.authentInfo:
+            self.authentInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.associationRequestInfo:
+            self.associationRequestInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.associationResponceInfo:
+            self.associationResponceInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.disassociationInfo:
+            self.disassociationInfo[(macAP,macClient)] = 0
         if (macAP,macClient) not in self.power:
             self.power[(macAP,macClient)] = "-"
-        if (macAP,macClient) not in self.eapHandshakeSuccess:
-            self.eapHandshakeSuccess[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.eapHandshakeFailed:
-            self.eapHandshakeFailed[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.corruptedPack:
-            self.corruptedPack[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.rtsList:
-            self.rtsList[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.ctsList:
-            self.ctsList[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.dataList:
-            self.dataList[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.numPack:
-            self.numPack[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.ackList:
-            self.ackList[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.beaconList:
-            self.beaconList[(macAP,macClient)] = 0
-        if (macAP,macClient) not in self.probeResponse:
-            self.probeResponse[(macAP,macClient)] = 0
-        if macClient not in self.ackList:
-            self.ackList[macClient] = 0
-        if (macAP,macClient) not in self.otherList:
-            self.otherList[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.eapHandshakeSuccessInfo:
+            self.eapHandshakeSuccessInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.eapHandshakeFailedInfo:
+            self.eapHandshakeFailedInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.corruptedPackInfo:
+            self.corruptedPackInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.rtsListInfo:
+            self.rtsListInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.ctsListInfo:
+            self.ctsListInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.dataListInfo:
+            self.dataListInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.numPackInfo:
+            self.numPackInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.ackListInfo:
+            self.ackListInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.beaconListInfo:
+            self.beaconListInfo[(macAP,macClient)] = 0
+        if (macAP,macClient) not in self.probeResponseInfo:
+            self.probeResponseInfo[(macAP,macClient)] = 0
+        if macClient not in self.ackListInfo:
+            self.ackListInfo[macClient] = 0
+        if (macAP,macClient) not in self.otherListInfo:
+            self.otherListInfo[(macAP,macClient)] = 0
         
     
-    def createArrayAP(self, macAP):
-        if macAP not in self.beaconAP:
-            self.beaconAP[macAP] = 0
-        if macAP not in self.numPackAP:
-            self.numPackAP[macAP] = 0
-        if macAP not in self.authentAP:
-            self.authentAP[macAP] = 0
-        if macAP not in self.associationRequestAP:
-            self.associationRequestAP[macAP] = 0
-        if macAP not in self.associationResponceAP:
-            self.associationResponceAP[macAP] = 0
-        if macAP not in self.disassociationAP:
-            self.disassociationAP[macAP] = 0
-        if macAP not in self.deauthentAP:
-            self.deauthentAP[macAP] = 0
-        if macAP not in self.probeRequestAP:
-            self.probeRequestAP[macAP] = 0
-        if macAP not in self.probeResponseAP:
-            self.probeResponseAP[macAP] = 0
-        if macAP not in self.eapHandshakeSuccessAP:
-            self.eapHandshakeSuccessAP[macAP] = 0
-        if macAP not in self.eapHandshakeFailedAP:
-            self.eapHandshakeFailedAP[macAP] = 0
-        if macAP not in self.corruptedPackAP:
-            self.corruptedPackAP[macAP] = 0
-        if macAP not in self.rtsListAP:
-            self.rtsListAP[macAP] = 0
-        if macAP not in self.ctsListAP:
-            self.ctsListAP[macAP] = 0
-        if macAP not in self.dataListAP:
-            self.dataListAP[macAP] = 0
-        if macAP not in self.ackListAP:
-            self.ackListAP[macAP] = 0
-        if macAP not in self.otherListAP:
-            self.otherListAP[macAP] = 0
-        if macAP not in self.powerAP:
-            self.powerAP[macAP] = "-"
-            
-    def createArrayClient(self, macClient):
-        if macClient not in self.beaconClient:
-            self.beaconClient[macClient] = 0
-        if macClient not in self.numPackClient:
-            self.numPackClient[macClient] = 0
-        if macClient not in self.authentClient:
-            self.authentClient[macClient] = 0
-        if macClient not in self.associationRequestClient:
-            self.associationRequestClient[macClient] = 0
-        if macClient not in self.associationResponceClient:
-            self.associationResponceClient[macClient] = 0
-        if macClient not in self.disassociationClient:
-            self.disassociationClient[macClient] = 0
-        if macClient not in self.deauthentClient:
-            self.deauthentClient[macClient] = 0
-        if macClient not in self.probeRequestClient:
-            self.probeRequestClient[macClient] = 0
-        if macClient not in self.probeResponseClient:
-            self.probeResponseClient[macClient] = 0
-        if macClient not in self.eapHandshakeSuccessClient:
-            self.eapHandshakeSuccessClient[macClient] = 0
-        if macClient not in self.eapHandshakeFailedClient:
-            self.eapHandshakeFailedClient[macClient] = 0
-        if macClient not in self.corruptedPackClient:
-            self.corruptedPackClient[macClient] = 0
-        if macClient not in self.rtsListClient:
-            self.rtsListClient[macClient] = 0
-        if macClient not in self.ctsListClient:
-            self.ctsListClient[macClient] = 0
-        if macClient not in self.dataListClient:
-            self.dataListClient[macClient] = 0
-        if macClient not in self.ackListClient:
-            self.ackListClient[macClient] = 0
-        if macClient not in self.otherListClient:
-            self.otherListClient[macClient] = 0
-    
+    def createArray(self, mac):
+        if mac not in self.beacon:
+            self.beacon[mac] = 0
+        if mac not in self.numPack:
+            self.numPack[mac] = 0
+        if mac not in self.authent:
+            self.authent[mac] = 0
+        if mac not in self.associationRequest:
+            self.associationRequest[mac] = 0
+        if mac not in self.associationResponce:
+            self.associationResponce[mac] = 0
+        if mac not in self.disassociation:
+            self.disassociation[mac] = 0
+        if mac not in self.deauthent:
+            self.deauthent[mac] = 0
+        if mac not in self.probeRequest:
+            self.probeRequest[mac] = 0
+        if mac not in self.probeResponse:
+            self.probeResponse[mac] = 0
+        if mac not in self.eapHandshakeSuccess:
+            self.eapHandshakeSuccess[mac] = 0
+        if mac not in self.eapHandshakeFailed:
+            self.eapHandshakeFailed[mac] = 0
+        if mac not in self.corruptedPack:
+            self.corruptedPack[mac] = 0
+        if mac not in self.rtsList:
+            self.rtsList[mac] = 0
+        if mac not in self.ctsList:
+            self.ctsList[mac] = 0
+        if mac not in self.dataList:
+            self.dataList[mac] = 0
+        if mac not in self.ackList:
+            self.ackList[mac] = 0
+        if mac not in self.otherList:
+            self.otherList[mac] = 0
+        if mac not in self.power:
+            self.power[mac] = "-"
+        if mac not in self.channel:
+            self.channel[mac] = "-"
     
 
     def checkFrequence(self,macAP, macClient, power):
@@ -262,52 +210,53 @@ class AnalyzePackage:
             if macAP != AnalyzePackage.BROADCAST_ADDR:
                 self.power[(macAP,macClient)] = power
                 self.powerAP[macAP] = power
+                
+    def checkChannel(self, mac, channel):
+        if channel != "0" and channel != None:
+            self.channel[mac] = channel
 
     def printInfo(self,essid,macAP,macClient):
         if macAP != None and macClient != None:
-            if (essid,macClient) not in self.probeRequest:
-                self.probeRequest[(essid,macClient)] = 0
+            if (essid,macClient) not in self.probeRequestInfo:
+                self.probeRequestInfo[(essid,macClient)] = 0
 
-            if self.numPack[(macAP,macClient)] != 0:
-                percentCorr = int(float(self.corruptedPack[(macAP,macClient)])/float(self.numPack[(macAP,macClient)])*100)
+            if self.numPackInfo[(macAP,macClient)] != 0:
+                percentCorr = int(float(self.corruptedPackInfo[(macAP,macClient)])/float(self.numPackInfo[(macAP,macClient)])*100)
             
             strPercentage = str(percentCorr)
             
-            i = tuple([essid, macAP, macClient, self.authent[(macAP,macClient)], self.deauthent[(macAP,macClient)], self.associationRequest[(macAP,macClient)], self.associationResponce[(macAP,macClient)], self.disassociation[(macAP,macClient)], self.eapHandshakeSuccess[(macAP,macClient)], self.eapHandshakeFailed[(macAP,macClient)], self.power[(macAP,macClient)], self.corruptedPack[(macAP,macClient)], strPercentage, self.dataList[(macAP,macClient)], self.rtsList[(macAP,macClient)], self.ctsList[(macAP,macClient)], self.ackList[(macAP, macClient)], self.beaconList[(macAP,macClient)],  self.probeRequest[(essid,macClient)], self.probeResponse[(macAP,macClient)], self.numPack[(macAP,macClient)], self.otherList[(macAP,macClient)]])
+            i = tuple([essid, macAP, macClient, self.authentInfo[(macAP,macClient)], self.deauthentInfo[(macAP,macClient)], self.associationRequestInfo[(macAP,macClient)], self.associationResponceInfo[(macAP,macClient)], self.disassociationInfo[(macAP,macClient)], self.eapHandshakeSuccessInfo[(macAP,macClient)], self.eapHandshakeFailedInfo[(macAP,macClient)], self.power[(macAP,macClient)], self.corruptedPackInfo[(macAP,macClient)], strPercentage, self.dataListInfo[(macAP,macClient)], self.rtsListInfo[(macAP,macClient)], self.ctsListInfo[(macAP,macClient)], self.ackListInfo[(macAP, macClient)], self.beaconListInfo[(macAP,macClient)],  self.probeRequestInfo[(essid,macClient)], self.probeResponseInfo[(macAP,macClient)], self.numPackInfo[(macAP,macClient)], self.otherListInfo[(macAP,macClient)]])
             
             self.info[i[1],i[2]] = i
-            #self.printerInfo.addInfo(i)
     
     
     def printInfoAP(self, essid, macAP, macClient):
         if macAP != None and macAP != AnalyzePackage.BROADCAST_ADDR and macClient != None:
-            if (macAP) not in self.probeRequestAP:
-                self.probeRequestAP[macAP] = 0
+            if (macAP) not in self.probeRequest:
+                self.probeRequest[macAP] = 0
 
-            if self.numPackAP[macAP] != 0:
-                percentCorr = int(float(self.corruptedPackAP[macAP])/float(self.numPackAP[macAP])*100)
+            if self.numPack[macAP] != 0:
+                percentCorr = int(float(self.corruptedPack[macAP])/float(self.numPack[macAP])*100)
             
             strPercentage = str(percentCorr)
             
-            i = tuple([essid, macAP, macClient, self.authentAP[macAP], self.deauthentAP[macAP], self.associationRequestAP[macAP], self.associationResponceAP[macAP], self.disassociationAP[macAP], "-", self.eapHandshakeSuccessAP[macAP], self.eapHandshakeFailedAP[macAP], self.powerAP[macAP],self.corruptedPackAP[macAP], strPercentage, self.dataListAP[macAP], self.rtsListAP[macAP], self.ctsListAP[macAP], self.ackListAP[macAP], self.beaconAP[macAP],  self.probeRequestAP[macAP], self.probeResponseAP[macAP], self.numPackAP[macAP], self.otherListAP[macAP]])
+            i = tuple([essid, macAP, macClient, self.channel[macAP], self.authent[macAP], self.deauthent[macAP], self.associationRequest[macAP], self.associationResponce[macAP], self.disassociation[macAP], self.eapHandshakeSuccess[macAP], self.eapHandshakeFailed[macAP], self.power[macAP],self.corruptedPack[macAP], strPercentage, self.dataList[macAP], self.rtsList[macAP], self.ctsList[macAP], self.ackList[macAP], self.beacon[macAP],  self.probeRequest[macAP], self.probeResponse[macAP], self.numPack[macAP], self.otherList[macAP]])
             
             self.infoAP[i[1]] = i
-            #self.printerInfo.addInfoAP(i)
             
     def printInfoClient(self, essid, macAP, macClient):
         if macAP != None and macClient != None and macClient != "":
-            if (macClient) not in self.probeRequestClient:
-                self.probeRequestClient[macClient] = 0
+            if (macClient) not in self.probeRequest:
+                self.probeRequest[macClient] = 0
             
-            if self.numPackClient[macClient] != 0:
-                percentCorr = int(float(self.corruptedPackClient[macClient])/float(self.numPackClient[macClient])*100)
+            if self.numPack[macClient] != 0:
+                percentCorr = int(float(self.corruptedPack[macClient])/float(self.numPack[macClient])*100)
             
             strPercentage = str(percentCorr)
             
-            i = tuple([essid, macAP, macClient, self.authentClient[macClient], self.deauthentClient[macClient], self.associationRequestClient[macClient], self.associationResponceClient[macClient], self.disassociationClient[macClient], "-", self.eapHandshakeSuccessClient[macClient], self.eapHandshakeFailedClient[macClient], self.corruptedPackClient[macClient], strPercentage, self.dataListClient[macClient], self.rtsListClient[macClient], self.ctsListClient[macClient], self.ackListClient[macClient], self.beaconClient[macClient],  self.probeRequestClient[macClient], self.probeResponseClient[macClient], self.numPackClient[macClient], self.otherListClient[macClient]])
+            i = tuple([essid, macAP, macClient, self.channel[macClient], self.authent[macClient], self.deauthent[macClient], self.associationRequest[macClient], self.associationResponce[macClient], self.disassociation[macClient], self.eapHandshakeSuccess[macClient], self.eapHandshakeFailed[macClient], self.corruptedPack[macClient], strPercentage, self.dataList[macClient], self.rtsList[macClient], self.ctsList[macClient], self.ackList[macClient], self.beacon[macClient],  self.probeRequest[macClient], self.probeResponse[macClient], self.numPack[macClient], self.otherList[macClient]])
             
             self.infoClient[i[2]] = i
-            #self.printerInfo.addInfoClient(i)
     
     
     def takeInformation(self):
@@ -380,83 +329,83 @@ class AnalyzePackage:
     
     def createArrayAndUpdateInfo(self, macAP, macClient, message, increaseNumPack=True):
         
-        self.createArray(macAP, macClient)
-        self.createArrayAP(macAP)
-        self.createArrayClient(macClient)
+        self.createArrayInfo(macAP, macClient)
+        self.createArray(macAP)
+        self.createArray(macClient)
 
         if message == Message.AUTH:
-            self.authent[(macAP, macClient)] += 1
-            self.authentAP[macAP] += 1
-            self.authentClient[macClient] += 1
+            self.authentInfo[(macAP, macClient)] += 1
+            self.authent[macAP] += 1
+            self.authent[macClient] += 1
         elif message == Message.DEAUTH:
-            self.deauthent[(macAP, macClient)] += 1
-            self.deauthentAP[macAP] += 1
-            self.deauthentClient[macClient] += 1
+            self.deauthentInfo[(macAP, macClient)] += 1
+            self.deauthent[macAP] += 1
+            self.deauthent[macClient] += 1
         elif message == Message.PROBE_REQ:
             #self.probeRequest[(macAP, macClient)] += 1
-            self.probeRequestAP[macAP] += 1
-            self.probeRequestClient[macClient] += 1
+            self.probeRequest[macAP] += 1
+            self.probeRequest[macClient] += 1
         elif message == Message.PROBE_RESP:
-            self.probeResponse[(macAP, macClient)] += 1
-            self.probeResponseAP[macAP] += 1
-            self.probeResponseClient[macClient] += 1
+            self.probeResponseInfo[(macAP, macClient)] += 1
+            self.probeResponse[macAP] += 1
+            self.probeResponse[macClient] += 1
         elif message == Message.HAND_SUCC:
-            self.eapHandshakeSuccess[(macAP, macClient)] += 1
-            self.eapHandshakeSuccessAP[macAP] += 1
-            self.eapHandshakeSuccessClient[macClient] += 1
+            self.eapHandshakeSuccessInfo[(macAP, macClient)] += 1
+            self.eapHandshakeSuccess[macAP] += 1
+            self.eapHandshakeSuccess[macClient] += 1
         elif message == Message.HAND_FAIL:
-            self.eapHandshakeFailed[(macAP, macClient)] += 1
-            self.eapHandshakeFailedAP[macAP] += 1
-            self.eapHandshakeFailedClient[macClient] += 1
+            self.eapHandshakeFailedInfo[(macAP, macClient)] += 1
+            self.eapHandshakeFailed[macAP] += 1
+            self.eapHandshakeFailed[macClient] += 1
         elif message == Message.CORR_PACK:
             if increaseNumPack:
-                self.corruptedPackAP[macAP] += 1
-            self.corruptedPack[(macAP, macClient)] += 1
-            self.corruptedPackClient[macClient] += 1
+                self.corruptedPack[macAP] += 1
+            self.corruptedPackInfo[(macAP, macClient)] += 1
+            self.corruptedPack[macClient] += 1
         elif message == Message.RTS:
-            self.rtsList[(macAP, macClient)] += 1
-            self.rtsListAP[macAP] += 1
-            self.rtsListClient[macClient] += 1
+            self.rtsListInfo[(macAP, macClient)] += 1
+            self.rtsList[macAP] += 1
+            self.rtsList[macClient] += 1
         elif message == Message.CTS:
-            self.ctsList[(macAP, macClient)] += 1
-            self.ctsListAP[macAP] += 1
-            self.ctsListClient[macClient] += 1
+            self.ctsListInfo[(macAP, macClient)] += 1
+            self.ctsList[macAP] += 1
+            self.ctsList[macClient] += 1
         elif message == Message.ACK:
-            self.ackList[(macAP, macClient)] += 1
-            self.ackListAP[macAP] += 1
-            self.ackListClient[macClient] += 1
+            self.ackListInfo[(macAP, macClient)] += 1
+            self.ackList[macAP] += 1
+            self.ackList[macClient] += 1
         elif message == Message.DATA:
             if increaseNumPack:
-                self.dataListAP[macAP] += 1
-            self.dataList[(macAP, macClient)] += 1
-            self.dataListClient[macClient] += 1
+                self.dataList[macAP] += 1
+            self.dataListInfo[(macAP, macClient)] += 1
+            self.dataList[macClient] += 1
         elif message == Message.BEACON:
             if increaseNumPack:
-                self.beaconAP[macAP] += 1
-            self.beaconList[(macAP, macClient)] += 1
-            self.beaconClient[macClient] += 1
+                self.beacon[macAP] += 1
+            self.beaconListInfo[(macAP, macClient)] += 1
+            self.beacon[macClient] += 1
         elif message == Message.ASSOC_REQ:
-            self.associationRequestAP[macAP] += 1
-            self.associationRequest[(macAP, macClient)] += 1
-            self.associationRequestClient[macClient] += 1
+            self.associationRequest[macAP] += 1
+            self.associationRequestInfo[(macAP, macClient)] += 1
+            self.associationRequest[macClient] += 1
         elif message == Message.ASSOC_RESP:
-            self.associationResponceAP[macAP] += 1
-            self.associationResponce[(macAP, macClient)] += 1
-            self.associationResponceClient[macClient] += 1
+            self.associationResponce[macAP] += 1
+            self.associationResponceInfo[(macAP, macClient)] += 1
+            self.associationResponce[macClient] += 1
         elif message == Message.DISASSOC:
-            self.disassociationAP[macAP] += 1
-            self.disassociation[(macAP, macClient)] += 1
-            self.disassociationClient[macClient] += 1
+            self.disassociation[macAP] += 1
+            self.disassociationInfo[(macAP, macClient)] += 1
+            self.disassociation[macClient] += 1
         elif message == Message.OTHER:
-            self.otherListAP[macAP] += 1
-            self.otherList[(macAP, macClient)] += 1
-            self.otherListClient[macClient] += 1
+            self.otherList[macAP] += 1
+            self.otherListInfo[(macAP, macClient)] += 1
+            self.otherList[macClient] += 1
 
         if increaseNumPack:
-            self.numPackAP[macAP] += 1
+            self.numPack[macAP] += 1
         
-        self.numPackClient[macClient] += 1
-        self.numPack[(macAP, macClient)] += 1
+        self.numPack[macClient] += 1
+        self.numPackInfo[(macAP, macClient)] += 1
         
         self.checkEssid(macAP, macClient)
         self.checkEssidAP(macAP, macClient)
@@ -468,6 +417,13 @@ class AnalyzePackage:
         from_DS = None
         to_DS = None
         
+        if p.haslayer(Dot11Elt):
+            try:
+                self.checkChannel(p.addr2, ord(p[Dot11Elt:3].info))
+            except Exception, e:
+                self.fileLog = open("log.log", "a")
+                self.fileLog.write(str(e))
+                self.fileLog.close()
         if hasattr(p, 'FCfield') and p.FCfield is not None:
             DS = p.FCfield & 0x3
             to_DS = DS & 0x1 != 0
@@ -493,40 +449,46 @@ class AnalyzePackage:
                 
                 if from_DS and not to_DS and p.addr3 != AnalyzePackage.BROADCAST_ADDR and p.addr1 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr3)
-                    self.createArray(key, p.addr1)
+                    self.createArrayInfo(key, p.addr1)
                     self.checkFrequence(key, p.addr1,p.dBm_AntSignal)
 
                 elif not from_DS and to_DS and p.addr2 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr1)
                     if key in self.apPresent:
-                        self.createArray(key, p.addr2)
+                        self.createArrayInfo(key, p.addr2)
                         self.checkFrequence(key,p.addr2,p.dBm_AntSignal)
                 
                 if p.haslayer(EAP):
                     if p["EAP":].code == 3: # -----------------------> SUCCESS
                         if (p.addr2,p.addr1) not in self.eapHandshakeSuccess:
-                            self.createArray(p.addr2, p.addr1)
+                            self.createArrayInfo(p.addr2, p.addr1)
                         if not from_DS and to_DS:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_SUCC)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
                         elif from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                         elif not from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_SUCC)
                             self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
 
                         return
                     elif p["EAP":] == 4: # --------------------> FAILED
                         if not from_DS and to_DS:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_FAIL)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
                         elif from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_FAIL)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                         elif not from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_FAIL)
                             self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
                         
                         return
                 
@@ -537,28 +499,34 @@ class AnalyzePackage:
                     if not from_DS and to_DS:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
                         self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                        self.checkChannel(p.addr2, p.Channel)
                         
                         self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.BEACON, False)
                         self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                         
                     elif from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
                         self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                        self.checkChannel(p.addr1, p.Channel)
                         
                         self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.BEACON, False)
                         self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                     elif not from_DS and not to_DS:
                         isDifferent = False
-                        if p.addr3 != p.addr2:
-                            isDifferent = True
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
-                            self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                            
-                        if not isDifferent:
-                            self.createArrayAndUpdateInfo(p.addr3, None, Message.BEACON)
-                        else:
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.BEACON, False)
-                        self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                        if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
+                            if p.addr3 != p.addr2:
+                                isDifferent = True
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
+                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                                self.checkChannel(p.addr2, p.Channel)
+                            if not isDifferent:
+                                self.createArrayAndUpdateInfo(p.addr3, None, Message.BEACON)
+                            else:
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.BEACON, False)
+                            self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                         
                     return
                 #elif hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 0:   #DATA
@@ -569,36 +537,44 @@ class AnalyzePackage:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.DATA)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                        
+                            self.checkChannel(p.addr2, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.DATA)
                         else:
                             if p.addr1 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.DATA, False)
                         self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                     elif from_DS and not to_DS:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.DATA)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.DATA)
                         else:
                             if p.addr2 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.DATA, False)
                         self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                     elif not from_DS and not to_DS:
-                        if p.addr3 != p.addr2:
-                            isDifferent = True
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.DATA)
-                            self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                        if not isDifferent:
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA)
-                            self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                        else:
-                            if p.addr1 != p.addr3:
-                                self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA, False)
+                        if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
+                            if p.addr3 != p.addr2:
+                                isDifferent = True
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.DATA)
+                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                                self.checkChannel(p.addr2, p.Channel)
+                                
+                            if not isDifferent:
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA)
                                 self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                                self.checkChannel(p.addr1, p.Channel)
+                            else:
+                                if p.addr1 != p.addr3:
+                                    self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA, False)
+                                    self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                                    self.checkChannel(p.addr1, p.Channel)
                         
                     return
                         
@@ -611,6 +587,7 @@ class AnalyzePackage:
                     
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.RTS)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
+                    self.checkChannel(macClient, p.Channel)
                 
                     return
                 elif hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 12:   #CTS
@@ -619,9 +596,11 @@ class AnalyzePackage:
                         if p.addr1 in self.apPresent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.CTS)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
                         else:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.CTS)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                     
                     return
                 elif hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 13:   #ACK
@@ -630,16 +609,15 @@ class AnalyzePackage:
                         if p.addr1 in self.apPresent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.ACK)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                            self.checkChannel(p.addr2, p.Channel)
                         else:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.ACK)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                     
                     return
                 
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 11:   #AUTH
-                    #f = open("AUTH.txt", "a")
-                    #f.write(str(p.addr1)+" "+str(p.addr2)+" "+str(p.addr3)+" "+str(from_DS)+" "+str(to_DS)+" "+ str(retry)+"\n")
-                    #f.close()
                     if retry == 0 and p.addr2 != p.addr3:
                         macAP = p.addr1
                         macClient = p.addr2
@@ -654,14 +632,16 @@ class AnalyzePackage:
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.AUTH)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
-
+                    self.checkChannel(macClient, p.Channel)
+                    
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 0:   #ASSOC_REQ
                     macAP = p.addr1
                     macClient = p.addr2
 
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_REQ)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
+                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
+                    self.checkChannel(macClient, p.Channel)
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 1:   #ASSOC_RESP
@@ -670,6 +650,7 @@ class AnalyzePackage:
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.DISASSOC)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
+                    self.checkChannel(macClient, p.Channel)
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 10:   #DISASSOC
@@ -682,6 +663,7 @@ class AnalyzePackage:
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_RESP)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
+                    self.checkChannel(macClient, p.Channel)
 
                     return
                         
@@ -695,6 +677,7 @@ class AnalyzePackage:
                             
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.DEAUTH)
                     self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
+                    self.checkChannel(macClient, p.Channel)
                     return
                         
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 4:   #PROBE_REQ
@@ -709,6 +692,7 @@ class AnalyzePackage:
                     
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.PROBE_REQ)
                     self.checkFrequence(macAP,macClient,p.dBm_AntSignal)
+                    self.checkChannel(macClient, p.Channel)
                     
                     return
                 
@@ -716,6 +700,7 @@ class AnalyzePackage:
                     if p.addr2 != None:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.PROBE_RESP)
                         self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                        self.checkChannel(p.addr1, p.Channel)
                     return
                 else:
                     isDifferent = False
@@ -724,47 +709,54 @@ class AnalyzePackage:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.OTHER)
                             self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                        
+                            self.checkChannel(p.addr2, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.OTHER)
                         else:
                             if p.addr1 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.OTHER, False)
                         self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                 
                     elif from_DS and not to_DS:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.OTHER)
                             self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.OTHER)
                         else:
                             if p.addr2 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.OTHER, False)
                         self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
+                        self.checkChannel(p.addr3, p.Channel)
                     
                     elif not from_DS and not to_DS:
-                        if p.addr3 != p.addr2:
-                            isDifferent = True
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.OTHER)
-                            self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                        if not isDifferent:
-                            self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER)
-                        else:
-                            if p.addr1 != p.addr3:
-                                self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER, False)
-                        self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                        if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
+                            if p.addr3 != p.addr2:
+                                isDifferent = True
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.OTHER)
+                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                                self.checkChannel(p.addr2, p.Channel)
+                            if not isDifferent:
+                                self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER)
+                            else:
+                                if p.addr1 != p.addr3:
+                                    self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER, False)
+                            self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                            self.checkChannel(p.addr1, p.Channel)
                     
-                    self.fileLog = open(self.titleLog, "a")
-                    self.fileLog.write("TYPE - SUBTYPE: ")
-                    self.fileLog.write(str(p.type)+ " " + str(p.subtype)+"\n")
-                    self.fileLog.write("ADDRESS: ")
-                    self.fileLog.write(str(p.addr1)+"   -   " + str(p.addr2)+"   -   " + str(p.addr3)+"\n")
-                    self.fileLog.write("FROM_DS - TO_DS: ")
-                    self.fileLog.write(str(from_DS)+ " "+ str(to_DS))
-                    self.fileLog.write("\n------------------------------------------------------------------\n\n")
-                    self.fileLog.close()
+                    if hasattr(p, 'addr2') and hasattr(p, 'addr3') and hasattr(p, 'addr1') and hasattr(p, 'type') and hasattr(p, 'subtype'):
+                        self.fileLog = open(self.titleLog, "a")
+                        self.fileLog.write("TYPE - SUBTYPE: ")
+                        self.fileLog.write(str(p.type)+ " " + str(p.subtype)+"\n")
+                        self.fileLog.write("ADDRESS: ")
+                        self.fileLog.write(str(p.addr1)+"   -   " + str(p.addr2)+"   -   " + str(p.addr3)+"\n")
+                        self.fileLog.write("FROM_DS - TO_DS: ")
+                        self.fileLog.write(str(from_DS)+ " "+ str(to_DS))
+                        self.fileLog.write("\n------------------------------------------------------------------\n\n")
+                        self.fileLog.close()
                 
         else:
             if p.haslayer(Dot11) and hasattr(p, 'info'):
@@ -776,6 +768,7 @@ class AnalyzePackage:
                 self.essid[p.addr3] = p.info
                 self.createArrayAndUpdateInfo(p.addr3, "", Message.NUM_PACK)
                 self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                self.checkChannel(p.addr2, p.Channel)
                 self.contForAP += 1
             
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 8:   #BEACON
@@ -785,28 +778,34 @@ class AnalyzePackage:
                 if not from_DS and to_DS:
                     self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
                     self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
+                    self.checkChannel(p.addr2, p.Channel)
                     
                     self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.BEACON, False)
                     self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
+                    self.checkChannel(p.addr3, p.Channel)
                     
                 elif from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
                     self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
+                    self.checkChannel(p.addr1, p.Channel)
                     
                     self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.BEACON, False)
                     self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
+                    self.checkChannel(p.addr3, p.Channel)
                 elif not from_DS and not to_DS:
                     isDifferent = False
                     if p.addr3 != p.addr2:
                         isDifferent = True
                         self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
                         self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                        self.checkChannel(p.addr2, p.Channel)
                         
                     if not isDifferent:
                         self.createArrayAndUpdateInfo(p.addr3, None, Message.BEACON)
                     else:
                         self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.BEACON, False)
                     self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
+                    self.checkChannel(p.addr1, p.Channel)
                     
                 self.contForAP += 1
                 return

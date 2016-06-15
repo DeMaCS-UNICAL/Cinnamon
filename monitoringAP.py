@@ -12,6 +12,10 @@ from threading import Thread
 import time
 from time import sleep
 
+import subprocess
+from subprocess import Popen, PIPE
+
+
 class bcolors:
     HEADER = '\033[95m'
     WARNING = '\033[93m'
@@ -150,8 +154,14 @@ if __name__ == "__main__":
             #sleep(1)
             #while not stopperCheck_2():
             sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
-            #f = open("cc.txt", "a")
-            #f.write("AAAAAAAA")
+            
+            print "\a"
+            import analyzeDatas
+                    
+            analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
+            analyzeData.analyze()
+            #f = open("FINISH.txt", "w")
+            #f.write("FINISH")
             #f.close()
             ##os.kill(pid, signal.SIGKILL)
             ##printer.endOfflineSniff(True)
@@ -229,6 +239,11 @@ if __name__ == "__main__":
                     else:
                         sniff(iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
+            
+                    import analyzeDatas
+                    
+                    analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
+                    analyzeData.analyze()
     
   
     

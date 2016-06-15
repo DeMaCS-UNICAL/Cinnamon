@@ -12,16 +12,16 @@ from texttable import Texttable
 
 class PrinterInfo ():
     
-    COLUMN_SIZE = 20
+    COLUMN_SIZE = 21
     COLUMN_SIZE_AP = 21
     
     HEIGHT_TABLE_CLIENT = 21
     HEIGHT_TABLE_AP = 25
     
     
-    HEADER_CLIENT = [' STATION'+" "*13, ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER']
+    HEADER_CLIENT = [' STATION'+" "*13, 'CH', ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER', 'CONT']
     
-    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13, ' CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
     HEADER_INFO = ['ESSID'+" "*15,'BSSID'+" "*12,'AUT','DEAUT', 'ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','PWR','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC','PROBE_PQ','PROBE_RP','TOT_PACK']
     
@@ -272,7 +272,7 @@ class PrinterInfo ():
         self.endSniffOffline = endSniffOffline
     
     def sort_tableClient(self, col=0):
-        if col != 0 and col != 6:
+        if col != 0 and col != 1 and col != 7:
             if self.reverseOrder_client:
                 return sorted(self.table, key=operator.itemgetter(col), cmp=self.numericCompair, reverse = True)
             else:
@@ -284,7 +284,7 @@ class PrinterInfo ():
                 return sorted(self.table, key=operator.itemgetter(col))
 
     def sort_tableAP(self, col=0):
-        if col != 0 and col != 1 and col != 9:
+        if col != 0 and col != 1 and col != 10:
             if self.reverseOrder_ap:
                 return sorted(self.tableAP, key=operator.itemgetter(col), cmp=self.numericCompair, reverse = True)
             else:
@@ -325,17 +325,17 @@ class PrinterInfo ():
             essid = infoAP[i][0]
             if essid == "":
                 essid = "-"
-            tup2 = tuple([essid, infoAP[i][1], infoAP[i][3], infoAP[i][4], infoAP[i][5], infoAP[i][6], infoAP[i][7], infoAP[i][9], infoAP[i][10], infoAP[i][11], infoAP[i][12], infoAP[i][13], infoAP[i][14], infoAP[i][15], infoAP[i][16], infoAP[i][17], infoAP[i][18], infoAP[i][19], infoAP[i][20], infoAP[i][21]])
+            tup2 = tuple([essid, infoAP[i][1], infoAP[i][3], infoAP[i][4], infoAP[i][5], infoAP[i][6], infoAP[i][7], infoAP[i][8], infoAP[i][9], infoAP[i][10], infoAP[i][11], infoAP[i][12], infoAP[i][13], infoAP[i][14], infoAP[i][15], infoAP[i][16], infoAP[i][17], infoAP[i][18], infoAP[i][19], infoAP[i][20], infoAP[i][21]])
             self.tableAP.add_rows([tup2],False)
         
         for i in infoClient.keys():
-            tup1 = tuple([infoClient[i][2], infoClient[i][3], infoClient[i][4], infoClient[i][5], infoClient[i][6], infoClient[i][7],  infoClient[i][9], infoClient[i][10], infoClient[i][11], infoClient[i][12], infoClient[i][13], infoClient[i][14], infoClient[i][15], infoClient[i][16], infoClient[i][17], infoClient[i][18], infoClient[i][19], infoClient[i][20], infoClient[i][21]])
+            tup1 = tuple([infoClient[i][2], infoClient[i][3], infoClient[i][4], infoClient[i][5], infoClient[i][6], infoClient[i][7], infoClient[i][8], infoClient[i][9], infoClient[i][10], infoClient[i][11], infoClient[i][12], infoClient[i][13], infoClient[i][14], infoClient[i][15], infoClient[i][16], infoClient[i][17], infoClient[i][18], infoClient[i][19], infoClient[i][20], infoClient[i][21]])
             
             self.table.add_rows([tup1],False)
         
         c = 0
         for i in self.sort_tableClient(self.indexOrdClient):
-            i[9] += "%"
+            i[10] += "%"
             
             tup = tuple([i])
             if tup != None:
@@ -350,7 +350,7 @@ class PrinterInfo ():
         
         d = 0
         for i in self.sort_tableAP(self.indexOrdAP):
-            i[11] += "%"
+            i[12] += "%"
             
             tup = tuple([i])
             if tup != None:
@@ -400,17 +400,17 @@ class PrinterInfo ():
     
     def createTable(self, header_client, header_ap):
         self.tableAP.set_deco(Texttable.HEADER)
-        self.tableAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.tableAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.tableAP.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.tableAP.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
-        self.tableAP.add_rows([[header_ap[0], header_ap[1], header_ap[2], header_ap[3], header_ap[4], header_ap[5], header_ap[6], header_ap[7], header_ap[8], header_ap[9], header_ap[10], header_ap[11], header_ap[12], header_ap[13],  header_ap[14], header_ap[15], header_ap[16], header_ap[17], header_ap[18], header_ap[19]]])
+        self.tableAP.add_rows([[header_ap[0], header_ap[1], header_ap[2], header_ap[3], header_ap[4], header_ap[5], header_ap[6], header_ap[7], header_ap[8], header_ap[9], header_ap[10], header_ap[11], header_ap[12], header_ap[13],  header_ap[14], header_ap[15], header_ap[16], header_ap[17], header_ap[18], header_ap[19], header_ap[20]]])
 
 
         self.table.set_deco(Texttable.HEADER)
-        self.table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        self.table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        self.table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        self.table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
         
-        self.table.add_rows([[header_client[0], header_client[1], header_client[2], header_client[3], header_client[4], header_client[5], header_client[6], header_client[7], header_client[8], header_client[9], header_client[10], header_client[11], header_client[12],  header_client[13], header_client[14], header_client[15], header_client[16], header_client[17], header_client[18]]])
+        self.table.add_rows([[header_client[0], header_client[1], header_client[2], header_client[3], header_client[4], header_client[5], header_client[6], header_client[7], header_client[8], header_client[9], header_client[10], header_client[11], header_client[12],  header_client[13], header_client[14], header_client[15], header_client[16], header_client[17], header_client[18], header_client[19]]])
         
 
     def setStopSniff(self, stopSniff):

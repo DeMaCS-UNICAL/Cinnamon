@@ -13,11 +13,11 @@ class PrinterAP(printerF.Printer):
     CONSTANT = 191
     HEIGHT_TABLE = 25
     
-    HEADER_AP_2 = ['ESSID'+" "*18,'BSSID'+" "*12,'AUT','DEAUT','ASS_RQ','ASS_RP','DISASS','HAND_S','HAND_F','PWR','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_PQ', 'PROBE_RP', 'TOT_PACK']
+    HEADER_AP_2 = ['ESSID'+" "*18,'BSSID'+" "*12, 'CH', 'AUT','DEAUT','ASS_RQ','ASS_RP','DIS','HAND_S','HAND_F','PWR','CORR','CORR%','DATA','RTS ','CTS ','ACK ','BEAC', 'PROBE_PQ', 'PROBE_RP', 'TOT_PACK']
     
-    HEADER = [' ESSID'+" "*18,' BSSID'+" "*13,' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER = [' ESSID'+" "*18,' BSSID'+" "*13, ' CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
-    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13,' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13, 'CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
     
     def __init__(self, height):
@@ -44,7 +44,7 @@ class PrinterAP(printerF.Printer):
         self.indexHeaderAfter = index
         
     def drawTable(self):
-        self.clear()
+        #self.clear()
         
         PrinterAP.HEADER[self.indexHeaderFirst] = PrinterAP.HEADER_AP_TMP[self.indexHeaderFirst]
         PrinterAP.HEADER[self.indexHeaderAfter] = re.sub("^ ", '>', PrinterAP.HEADER[self.indexHeaderAfter])
@@ -103,8 +103,8 @@ class PrinterAP(printerF.Printer):
     
     def init_table(self, table):
         table.set_deco(Texttable.HEADER)
-        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
-        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
+        table.set_cols_align(["l", "r", "c", "c","c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c", "c"])
+        table.set_cols_valign(["t", "b", "m", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b", "b"])
     
     
     
