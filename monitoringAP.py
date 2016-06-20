@@ -132,39 +132,17 @@ if __name__ == "__main__":
             
             analyzePack = analyzePackage.AnalyzePackage(printer)
             
-            #f = open(args.file, "r")
-            #d = f.readlines()
-            #f.seek(0)
-            #for i in d:
-                #print d
-                #print "\n"
-                #print "\n"
-            #f.close()
-            
             update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
             update.start()
 
-            #fifo = open("path", "r")
-            #print "ciao"
-            #with open(fifo, mode='r', buffering=-1):
-                #print "ciao"
-            #with open(fifo, mode='r', buffering=1) as lines:
-                #for line in lines:
-            #sniff(offline="path", prn=sniffPack.sniffmgmt, stop_filter=stopperCheck)
-            #sleep(1)
-            #while not stopperCheck_2():
             sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             
-            print "\a"
+            #print "\a"
             import analyzeDatas
                     
             analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
             analyzeData.analyze()
-            #f = open("FINISH.txt", "w")
-            #f.write("FINISH")
-            #f.close()
-            ##os.kill(pid, signal.SIGKILL)
-            ##printer.endOfflineSniff(True)
+
             
         if args.interface != None:
 
@@ -189,13 +167,18 @@ if __name__ == "__main__":
                     import saving
                     import detachPack
                     
+                    if not os.path.exists(folder):
+                        os.makedirs(folder)
+                    
                     nameFile = name+str(contFile)+extension
-                    existFile = os.path.exists(nameFile)
+                    nameFileFolder = folder + nameFile
+                    existFile = os.path.exists(nameFileFolder)
 
                     while existFile:
                         contFile += 1
                         nameFile = name+str(contFile)+extension
-                        existFile = os.path.exists(nameFile)
+                        nameFileFolder = folder + nameFile
+                        existFile = os.path.exists(nameFileFolder)
                         
                     detachP = detachPack.DetachPack(nameFile)
                     
