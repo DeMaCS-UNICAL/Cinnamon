@@ -28,7 +28,7 @@ interfaces = {}
 
 bssid = None
 
-folder = "CAPTURE/CAPT/"
+folder = "Capture/"
 name = "CAPT-"
 extension = ".pcap"
 contFile = 1
@@ -211,6 +211,8 @@ if __name__ == "__main__":
                     p = subprocess.call("./monitoringAP.py -i "+args.interface, shell=True)
                     #os.killpg(os.getpgid(p.pid), signal.SIGTERM)
                     detachP.setStopSniff(True)
+                    os.rename(nameFile, folder+nameFile)
+                    #shutil.move(nameFile, folder+nameFile)
                     #os.system('stty sane')
                     os.kill(pid,signal.SIGKILL)
                     #sys.exit(0)
@@ -220,7 +222,8 @@ if __name__ == "__main__":
                     import updateDisplay
                     import checkPrinter
                     import analyzePackage
-                    ##printer = None
+                    
+                    #printer = None
                     printer = printerInfo.PrinterInfo(1, "Thread1", 2)
                     #printer.start()
                     checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
@@ -244,7 +247,7 @@ if __name__ == "__main__":
                     
                     analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
                     analyzeData.analyze()
-    
+                    
   
     
     #print "\nNUM AP: ", len(apPresent),"\n"
