@@ -116,6 +116,8 @@ class AnalyzePackage:
         self.infoAP = {}
         self.infoClient = {}
         
+        self.roamingClient = {}
+        
         self.contForAP = 0
         
         now = datetime.datetime.now()
@@ -268,6 +270,9 @@ class AnalyzePackage:
     def takeInformationClient(self):
         return self.infoClient
     
+    def takeInformationRoamingClient(self):
+        return self.roamingClient
+    
     
     def createArrayForCorruptPack(self, essid, macAP, macClient, hasInfo):
         self.createArrayAndUpdateInfo(macAP, macClient, Message.CORR_PACK)
@@ -326,8 +331,18 @@ class AnalyzePackage:
         else:
             self.printInfoClient("-", macAP, macClient)
 
+    def checkRoamingClient(self, macAP, macClient):
+        if macClient not in self.roamingClient:
+            self.roamingClient[macClient] = []
+        
+        if macAP not in self.roamingClient[macClient]:
+            self.roamingClient[macClient].append(macAP)
+
     
     def createArrayAndUpdateInfo(self, macAP, macClient, message, increaseNumPack=True):
+        
+        #d = open("ROAMING.txt", "a")
+        
         
         self.createArrayInfo(macAP, macClient)
         self.createArray(macAP)
@@ -337,10 +352,17 @@ class AnalyzePackage:
             self.authentInfo[(macAP, macClient)] += 1
             self.authent[macAP] += 1
             self.authent[macClient] += 1
+            
+            self.checkRoamingClient(macAP, macClient)
+            #d.write(macAP+" "+macClient+" AUTH \n")
+            
         elif message == Message.DEAUTH:
             self.deauthentInfo[(macAP, macClient)] += 1
             self.deauthent[macAP] += 1
             self.deauthent[macClient] += 1
+            
+            self.checkRoamingClient(macAP, macClient)
+            #d.write(macAP+" "+macClient+" DEAUTH \n")
         elif message == Message.PROBE_REQ:
             #self.probeRequest[(macAP, macClient)] += 1
             self.probeRequest[macAP] += 1
@@ -379,6 +401,9 @@ class AnalyzePackage:
                 self.dataList[macAP] += 1
             self.dataListInfo[(macAP, macClient)] += 1
             self.dataList[macClient] += 1
+            
+            self.checkRoamingClient(macAP, macClient)
+            #d.write(macAP+" "+macClient+" DATA \n")
         elif message == Message.BEACON:
             if increaseNumPack:
                 self.beacon[macAP] += 1
@@ -388,6 +413,9 @@ class AnalyzePackage:
             self.associationRequest[macAP] += 1
             self.associationRequestInfo[(macAP, macClient)] += 1
             self.associationRequest[macClient] += 1
+            
+            self.checkRoamingClient(macAP, macClient)
+            #d.write(macAP+" "+macClient+" ASSOC_REQ \n")
         elif message == Message.ASSOC_RESP:
             self.associationResponce[macAP] += 1
             self.associationResponceInfo[(macAP, macClient)] += 1
@@ -410,6 +438,8 @@ class AnalyzePackage:
         self.checkEssid(macAP, macClient)
         self.checkEssidAP(macAP, macClient)
         self.checkEssidClient(macAP, macClient)
+        
+        #d.close()
         
        
 

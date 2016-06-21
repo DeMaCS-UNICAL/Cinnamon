@@ -79,7 +79,7 @@ class PrinterInfo ():
         #t = open("H.txt","a")
         #t.write(str(LINES)+" "+str(COL)+"\n")
         #t.close()
-        curses.resizeterm(300,300)
+        #curses.resizeterm(190, 200)
         
         curses.curs_set(0)
         

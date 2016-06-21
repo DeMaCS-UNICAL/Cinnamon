@@ -142,7 +142,9 @@ if __name__ == "__main__":
                     
             analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
             analyzeData.analyze()
-
+            
+            
+            subprocess.call("xdotool key q", shell=True)
             
         if args.interface != None:
 
