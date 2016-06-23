@@ -90,6 +90,7 @@ if __name__ == "__main__":
     parser.add_argument('-b', '--bssid', dest='bssid', type=str, required=False, help='Bssid to set')
     parser.add_argument('-c', '--channel', dest='channel', type=str, required=False, help='Channel to set')
     parser.add_argument('-s', '--save', action='store_true', help='Save the capture')
+    parser.add_argument('-a', '--analyze', action='store_true', help='Print the analyze at the end of execution')
     args = parser.parse_args()
     
     user = os.getenv("SUDO_USER")
@@ -137,14 +138,19 @@ if __name__ == "__main__":
 
             sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             
+            if args.analyze == True:
             #print "\a"
-            import analyzeDatas
-                    
-            analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
-            analyzeData.analyze()
+                import analyzeDataClient
+                import analyzeDataAP
+                
+                analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack)
+                analyzeDataC.analyzeData()
+                
+                analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack)
+                analyzeDataAP.analyzeData()
             
-            
-            subprocess.call("xdotool key q", shell=True)
+                self.printer.setStopSniff(True)
+                curses.endwin()
             
         if args.interface != None:
 
@@ -158,12 +164,12 @@ if __name__ == "__main__":
             else:
                 
                 import subprocess
-                #try:
-                    #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
-                    #subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
-                    #subprocess.call("ifconfig "+ args.interface +" up", shell=True)
-                #except Exception:
-                    #sys.exit('Could not start monitor mode')
+                try:
+                    subprocess.call("ifconfig "+ args.interface +" down", shell=True)
+                    subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
+                    subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+                except Exception:
+                    sys.exit('Could not start monitor mode')
 
                 if args.save == True:
                     import saving
@@ -228,10 +234,15 @@ if __name__ == "__main__":
                         sniff(iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
             
-                    import analyzeDatas
-                    
-                    analyzeData = analyzeDatas.AnalyzeDatas(analyzePack)
-                    analyzeData.analyze()
+                    if args.analyze == True:
+                        import analyzeDataClient
+                        import analyzeDataAP
+                        
+                        analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack)
+                        analyzeDataC.analyzeData()
+                        
+                        analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack)
+                        analyzeDataAP.analyzeData()
                     
   
     
