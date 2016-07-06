@@ -19,7 +19,7 @@ class PrinterInfo ():
     HEIGHT_TABLE_AP = 25
     
     
-    HEADER_CLIENT = [' STATION'+" "*13, 'CH', ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR%',' DATA  ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER', 'CONT']
+    HEADER_CLIENT = [' STATION'+" "*13, 'CH', ' AUT',' DEAUT ', ' ASS_RQ ',' ASS_RP ',' DISASS ',' HAND_S ',' HAND_F ',' CORR  ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC  ', ' PROBE_PQ  ', ' PROBE_RP  ', ' TOT_PACK', ' OTHER', 'CONT']
     
     HEADER_AP = [' ESSID'+" "*18,' BSSID'+" "*13, ' CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
@@ -79,7 +79,7 @@ class PrinterInfo ():
         #t = open("H.txt","a")
         #t.write(str(LINES)+" "+str(COL)+"\n")
         #t.close()
-        #curses.resizeterm(190, 200)
+        #curses.resizeterm(55, 195)
         
         curses.curs_set(0)
         

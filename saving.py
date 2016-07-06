@@ -17,9 +17,10 @@ class Saving (threading.Thread):
         
     def run(self):
         #while (not self.stopSniff):
+        
         sniff(iface=self.interface, prn=self.detachPack.detach, stop_filter=self.isStopSniff)
             #self.stopSniff = True
-    
+
     
     def setStopSniff(self, stopSniff):
         self.stopSniff = stopSniff
