@@ -68,11 +68,13 @@ class PrinterInfo ():
         self.mypad_pos_client = 0
         self.mypad_pos_ap = 0
         
+        self.chooseMacClient = ""
+        
         #self.lock = threading.Lock()
         
         curses.initscr()
-        curses.noecho()
-        curses.cbreak()
+        #curses.noecho()
+        #curses.cbreak()
         
         #LINES, COL = src.getmaxyx()
         #LINES = 60
@@ -81,7 +83,7 @@ class PrinterInfo ():
         #t.close()
         #curses.resizeterm(55, 195)
         
-        curses.curs_set(0)
+        #curses.curs_set(0)
         
         curses.start_color()
         
@@ -311,6 +313,8 @@ class PrinterInfo ():
         self.infoClient = i
         #self.printInformation()
 
+    def setChooseMacAddress(self, macAddressClient):
+        self.chooseMacClient = macAddressClient
     
     def sortTable(self, info, infoAP, infoClient):
         self.table.reset()
@@ -328,11 +332,17 @@ class PrinterInfo ():
             tup2 = tuple([essid, infoAP[i][1], infoAP[i][3], infoAP[i][4], infoAP[i][5], infoAP[i][6], infoAP[i][7], infoAP[i][8], infoAP[i][9], infoAP[i][10], infoAP[i][11], infoAP[i][12], infoAP[i][13], infoAP[i][14], infoAP[i][15], infoAP[i][16], infoAP[i][17], infoAP[i][18], infoAP[i][19], infoAP[i][20], infoAP[i][21]])
             self.tableAP.add_rows([tup2],False)
         
-        for i in infoClient.keys():
+        if self.chooseMacClient == "":
+            for i in infoClient.keys():
+                tup1 = tuple([infoClient[i][2], infoClient[i][3], infoClient[i][4], infoClient[i][5], infoClient[i][6], infoClient[i][7], infoClient[i][8], infoClient[i][9], infoClient[i][10], infoClient[i][11], infoClient[i][12], infoClient[i][13], infoClient[i][14], infoClient[i][15], infoClient[i][16], infoClient[i][17], infoClient[i][18], infoClient[i][19], infoClient[i][20], infoClient[i][21]])
+                
+                self.table.add_rows([tup1],False)
+        else:
+            i = self.chooseMacClient
             tup1 = tuple([infoClient[i][2], infoClient[i][3], infoClient[i][4], infoClient[i][5], infoClient[i][6], infoClient[i][7], infoClient[i][8], infoClient[i][9], infoClient[i][10], infoClient[i][11], infoClient[i][12], infoClient[i][13], infoClient[i][14], infoClient[i][15], infoClient[i][16], infoClient[i][17], infoClient[i][18], infoClient[i][19], infoClient[i][20], infoClient[i][21]])
-            
+                
             self.table.add_rows([tup1],False)
-        
+            
         c = 0
         for i in self.sort_tableClient(self.indexOrdClient):
             i[10] += "%"
@@ -348,6 +358,7 @@ class PrinterInfo ():
                     self.printerClient.add_rows(self.tupl, 0)
                 c += 1
         
+            
         d = 0
         for i in self.sort_tableAP(self.indexOrdAP):
             i[12] += "%"

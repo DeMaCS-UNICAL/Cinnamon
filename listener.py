@@ -2,12 +2,13 @@
 
 import threading, curses, sys
 import printerInfo
+import updateDisplay
 import checkPrinter
-
+import curses.textpad
 
 class Listener (threading.Thread):
     
-    def __init__(self, threadID, name, delay, printer, checkPrint):
+    def __init__(self, threadID, name, delay, printer, checkPrint, update):
         threading.Thread.__init__(self)
         #super(Listener, self).__init__()
         #self._stop = threading.Event()
@@ -15,12 +16,16 @@ class Listener (threading.Thread):
         
         self.printer = printer
         self.checkPrint = checkPrint
+        self.update = update
+        
         self.src = curses.newpad(50,300)
         self.src.keypad(True)
         
         self.src.nodelay(0)
         
-        self.close = False
+        #self.close = False
+        
+        self.insertText = False
 
 
     #def stop(self):
@@ -42,7 +47,7 @@ class Listener (threading.Thread):
             #f = open("cmd.txt", "a")
             #f.write(str(cmd)+"\n")
             #f.close()
-            if cmd == ord('q') or self.close:
+            if cmd == ord('q'):
                 self.printer.setStopSniff(True)
                 curses.endwin()
                 cmd = None
@@ -50,6 +55,7 @@ class Listener (threading.Thread):
                 #elif cmd == ord('s'):
             elif cmd == curses.KEY_DOWN:
                 self.printer.goDown()
+                
             elif cmd == curses.KEY_UP:
                 self.printer.goUp()
             elif cmd == ord("p"):
@@ -69,9 +75,27 @@ class Listener (threading.Thread):
                 self.printer.changeTable()
             elif cmd == ord("r"):
                 self.printer.reverseOrderTable()
-            self.checkPrint.setCanPrint()
+            elif cmd == ord("f"):
+                self.insertText = True
+                self.update.setCanPrint(False)
+                
+                inp = curses.newwin(7,50, 15,70)
+                inp.border()
+                
+                inp.addstr(1,2, "Please enter a MAC-address:")
+                input = inp.getstr(3, 2, 20)
+                
+                self.printer.setChooseMacAddress(input)
+                
+                self.insertText = False
+                self.update.setCanPrint(True)
+            elif cmd == 127:    #CODE FOR BACKSPACE
+                self.printer.setChooseMacAddress("")
+            
+            if not self.insertText:
+                self.update.setCanPrint(True)
+                self.checkPrint.setCanPrint()
             
             #self.printer.printInformation()                
-            
-            
-            
+
+

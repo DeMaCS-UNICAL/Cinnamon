@@ -20,7 +20,7 @@ class UpdateDisplay (threading.Thread):
         self.analyzePack = analyzePack
         self.checkPrint = checkPrint
         
-        self.canPrint = False
+        self.canPrint = True
         self.stopSniff = False
         
         self.info = {}
@@ -31,10 +31,13 @@ class UpdateDisplay (threading.Thread):
     def getStopSniff(self):
         return self.stopSniff
     
+    def setCanPrint(self, canPrint):
+        self.canPrint = canPrint
+    
     def run(self):
         while not self.printer.getStopSniff():
             
-            if not self.printer.getPauseSniff():
+            if not self.printer.getPauseSniff() and self.canPrint:
             #if self.canPrint:
                 self.info = self.analyzePack.takeInformation()
                 self.infoAP = self.analyzePack.takeInformationAP()
