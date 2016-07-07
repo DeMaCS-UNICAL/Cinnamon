@@ -140,18 +140,19 @@ if __name__ == "__main__":
             sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             
             if args.analyze == True:
-            #print "\a"
+            #print "\a" 
+                os.system('stty sane')
                 import analyzeDataClient
                 import analyzeDataAP
                 
-                analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack)
+                analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack, str(args.file))
                 analyzeDataC.analyzeData()
                 
-                analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack)
+                analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack, str(args.file))
                 analyzeDataAP.analyzeData()
-            
-                self.printer.setStopSniff(True)
-                curses.endwin()
+
+                printer.setStopSniff(True)
+                sys.exit(0)
             
         if args.interface != None:
 
@@ -164,106 +165,113 @@ if __name__ == "__main__":
                 os.system('stty sane')
             else:
                 
-                try:
                     #os.system("ifconfig "+ args.interface +" down")
                     #os.system("iwconfig "+ args.interface +" mode monitor")
                     #os.system("ifconfig "+ args.interface +" up")
                     
                     #subprocess.call("ifconfig "+ args.interface +" down; iwconfig "+ args.interface +" mode monitor; ifconfig "+ args.interface +" up", shell=True)
                     
-                    if args.save == True:
+                if args.save == True:
+                    try:
                         import subprocess
                         
                         subprocess.call("ifconfig "+ args.interface +" down", shell=True)
                         subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
                         subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+                    except Exception:
+                        sys.exit('Could not start monitor mode')
+                    
+                    import saving
+                    import detachPack
+                    
+                    if not os.path.exists(folder):
+                        os.makedirs(folder)
+                    
+                    nameFile = name+str(contFile)+extension
+                    nameFileFolder = folder + nameFile
+                    existFile = os.path.exists(nameFileFolder)
 
-                        import saving
-                        import detachPack
-                        
-                        if not os.path.exists(folder):
-                            os.makedirs(folder)
-                        
+                    while existFile:
+                        contFile += 1
                         nameFile = name+str(contFile)+extension
                         nameFileFolder = folder + nameFile
                         existFile = os.path.exists(nameFileFolder)
-
-                        while existFile:
-                            contFile += 1
-                            nameFile = name+str(contFile)+extension
-                            nameFileFolder = folder + nameFile
-                            existFile = os.path.exists(nameFileFolder)
-                            
-                        detachP = detachPack.DetachPack(nameFile)
                         
-                        
-                        #thread = Thread(target=aaa)
-                        #thread.start()
-                        
-                        savingPack = saving.Saving(2, "Thread2", 2, detachP, args.interface)
-                        savingPack.start()
-                        
-                        pid = os.getpid()
-                        #sleep(3)
-                        #nameFile = "path.fifo"
-                        
-                        #import time
-                        #from time import sleep
-                        
-                        #time.sleep(0.5)
-                        
-                        
-                        p = subprocess.call("./monitoringAP.py -i "+args.interface, shell=True)
-                        #os.killpg(os.getpgid(p.pid), signal.SIGTERM)
-                        detachP.setStopSniff(True)
-                        os.rename(nameFile, folder+nameFile)
-                        #shutil.move(nameFile, folder+nameFile)
-                        #os.system('stty sane')
-                        #os.kill(pid,signal.SIGKILL)
-                        sys.exit(0)
-                
+                    detachP = detachPack.DetachPack(nameFile)
+                    
+                    
+                    #thread = Thread(target=aaa)
+                    #thread.start()
+                    
+                    savingPack = saving.Saving(2, "Thread2", 2, detachP, args.interface)
+                    savingPack.start()
+                    
+                    pid = os.getpid()
+                    #sleep(3)
+                    #nameFile = "path.fifo"
+                    
+                    #import time
+                    #from time import sleep
+                    
+                    #time.sleep(0.5)
+                    
+                    if args.analyze == True:
+                        p = subprocess.call("./monitoringAP.py -i "+args.interface+" -a", shell=True)
                     else:
-                        import listener
-                        import updateDisplay
-                        import checkPrinter
-                        import analyzePackage
+                        p = subprocess.call("./monitoringAP.py -i "+args.interface, shell=True)
+                    #os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+                    detachP.setStopSniff(True)
+                    os.rename(nameFile, folder+nameFile)
+                    #shutil.move(nameFile, folder+nameFile)
+                    #os.system('stty sane')
+                    #os.kill(pid,signal.SIGKILL)
+                    sys.exit(0)
+            
+                else:
+                    import listener
+                    import updateDisplay
+                    import checkPrinter
+                    import analyzePackage
+                    
+                    try:
                         import subprocess
                         
                         #subprocess.call("ifconfig "+ args.interface +" down", shell=True)
                         subprocess.call("iwconfig "+ args.interface +" mode monitor", shell=True)
                         subprocess.call("ifconfig "+ args.interface +" up", shell=True)
+                    except Exception:
+                        sys.exit('Could not start monitor mode')
                         
-                        #printer = None
-                        printer = printerInfo.PrinterInfo(1, "Thread1", 2)
-                        #printer.start()
-                        checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
-                        checkPrint.start()
+                    #printer = None
+                    printer = printerInfo.PrinterInfo(1, "Thread1", 2)
+                    #printer.start()
+                    checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
+                    checkPrint.start()
+                    
+                    listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
+                    listenerKey.start()
+                    
+                    analyzePack = analyzePackage.AnalyzePackage(printer)
+                    
+                    update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
+                    update.start()
+                    
+                    if bssid != None:
+                        sniff(lfilter=filterFunc, iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
+                    else:
+                        sniff(iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
+            #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
+            
+                    if args.analyze == True:
+                        import analyzeDataClient
+                        import analyzeDataAP
                         
-                        listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
-                        listenerKey.start()
+                        analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack)
+                        analyzeDataC.analyzeData()
                         
-                        analyzePack = analyzePackage.AnalyzePackage(printer)
-                        
-                        update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
-                        update.start()
-                        
-                        if bssid != None:
-                            sniff(lfilter=filterFunc, iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
-                        else:
-                            sniff(iface=args.interface, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
-                #sniff(filter="wlan src 00:80:48:62:dd:13 or wlan dst 00:80:48:62:dd:13", iface=args.interface, prn=sniffPack.sniffmgmt)
+                        analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack)
+                        analyzeDataAP.analyzeData()
                 
-                        if args.analyze == True:
-                            import analyzeDataClient
-                            import analyzeDataAP
-                            
-                            analyzeDataC = analyzeDataClient.AnalyzeDataClient(analyzePack)
-                            analyzeDataC.analyzeData()
-                            
-                            analyzeDataAP = analyzeDataAP.AnalyzeDataAP(analyzePack)
-                            analyzeDataAP.analyzeData()
-                except Exception:
-                    sys.exit('Could not start monitor mode')
   
     
     #print "\nNUM AP: ", len(apPresent),"\n"

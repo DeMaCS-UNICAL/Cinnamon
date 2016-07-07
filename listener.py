@@ -9,6 +9,9 @@ class Listener (threading.Thread):
     
     def __init__(self, threadID, name, delay, printer, checkPrint):
         threading.Thread.__init__(self)
+        #super(Listener, self).__init__()
+        #self._stop = threading.Event()
+        self.setDaemon(True)
         
         self.printer = printer
         self.checkPrint = checkPrint
@@ -16,8 +19,20 @@ class Listener (threading.Thread):
         self.src.keypad(True)
         
         self.src.nodelay(0)
+        
+        self.close = False
 
 
+    #def stop(self):
+        #self._stop.set()
+
+    #def stopped(self):
+        #return self._stop.isSet()
+    
+    #def setCloseTrue(self):
+        #self.close = True
+        ##cmd = ord('q')
+        #self.src.nodelay(True)
     
     def run(self):
         cmd = ""
@@ -27,7 +42,7 @@ class Listener (threading.Thread):
             #f = open("cmd.txt", "a")
             #f.write(str(cmd)+"\n")
             #f.close()
-            if cmd == ord('q'):
+            if cmd == ord('q') or self.close:
                 self.printer.setStopSniff(True)
                 curses.endwin()
                 cmd = None

@@ -3,18 +3,45 @@
 import analyzeData
 import analyzePackage
 
+import os
+
 class AnalyzeDataAP(analyzeData.AnalyzeData):
     
-    
-    def __init__(self, analyze):
-        analyzeData.AnalyzeData.__init__(self, analyze)
+    def __init__(self, analyze, path="DATA_AP"):
+        analyzeData.AnalyzeData.__init__(self, analyze,path)
         
         self.contUfficialAP = 0
         self.contRogueAP = 0
         
+        extension = ".txt"
+        contFile = 0
+        if path == "DATA_AP":
+            self.nameFile = path+extension
+            existFile = os.path.exists(self.nameFile)
+
+            while existFile:
+                contFile += 1
+                #self.nameFile = ""
+                self.nameFile = path+"_"+str(contFile)+extension
+                existFile = os.path.exists(self.nameFile)
+        else:
+            self.path = path.split("/")
+            self.folder = ""
+            if len(self.path) > 1:
+                for i in range(len(self.path)-1):  
+                    self.folder = self.folder + self.path[i]+"/"
+                    #DATA.write(str(self.path[i]))
+                    #DATA.write("\n")
+            else:
+                self.folder = self.path[0]
+            #for i in range(len(self.path)-1):
+                #self.folder = self.folder + self.path[i]
+            self.name = self.path[len(self.path)-1][:-5].strip()
+            
+            self.nameFile = self.folder+self.name+"_AP.txt"
         
     def analyzeData(self):
-        DATA = open("DATA_AP.txt", "a")
+        DATA = open(self.nameFile, "a")
         
         DATA.write("CHANNEL AP:\n")
         for data in self.infoAP:
@@ -149,3 +176,7 @@ class AnalyzeDataAP(analyzeData.AnalyzeData):
 
         
         DATA.close()
+        
+        #os.rename("DATA_AP.txt", self.folder+self.nameFile)
+        
+        

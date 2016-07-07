@@ -4,7 +4,7 @@ import analyzePackage
 
 class AnalyzeData:
     
-    def __init__(self, analyze):
+    def __init__(self, analyze, path):
         self.analyze = analyze
         #self.info = analyze.takeInformation()
         self.infoAP = analyze.takeInformationAP()
