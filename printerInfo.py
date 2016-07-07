@@ -313,6 +313,9 @@ class PrinterInfo ():
         self.infoClient = i
         #self.printInformation()
 
+    def macAddressPresent(self, MAC_address):
+        return MAC_address in self.infoClient.keys()
+
     def setChooseMacAddress(self, macAddressClient):
         self.chooseMacClient = macAddressClient
     
@@ -392,7 +395,7 @@ class PrinterInfo ():
 
         self.update()
         
-
+    
     def printInformation(self):
         #self.lock.acquire()
 

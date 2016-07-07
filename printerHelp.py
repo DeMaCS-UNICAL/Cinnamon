@@ -20,7 +20,7 @@ class PrinterHelp(printerF.Printer):
     def drawTable(self):
         #self.addTextBox()
         try:
-            self.src.addstr(0,0, "q = Exit   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info    - = Remove Info", curses.color_pair(1))
+            self.src.addstr(0,0, "q = Exit   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info    - = Remove Info     f = Search", curses.color_pair(1))
         except Exception, e:
             self.fileLog = open("log.log", "a")
             self.fileLog.write(str(e))
@@ -33,16 +33,4 @@ class PrinterHelp(printerF.Printer):
     def resizeTable(self, height):
         self.height = height
         self.src.resize(height, 300)
-        
-    
-    def addTextBox(self):
-        self.src.addstr(0,0, "q = Exit   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info    - = Remove Info", curses.color_pair(1))
-        
-        win = curses.newwin(5, 60, 5, 5)
-        win.border()
-        global tb
-        tb = curses.textpad.Textbox(win)
-        
-        text = tb.edit()
-        self.src.addstr(0,0,text.encode('utf_8'))
         

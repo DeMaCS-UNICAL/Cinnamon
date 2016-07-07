@@ -85,12 +85,24 @@ class Listener (threading.Thread):
                 inp.addstr(1,2, "Please enter a MAC-address:")
                 input = inp.getstr(3, 2, 20)
                 
-                self.printer.setChooseMacAddress(input)
+                while not self.printer.macAddressPresent(input) and input != "":
+                    inp.clear()
+                    inp.border()
                 
+                    inp.addstr(1,2, "Please enter a MAC-address:")
+                    inp.addstr(5,2, "MAC-address Wrong, try again")
+                    input = ""
+                    inp.addstr(5,2, "")
+                    input = inp.getstr(3, 2, 20)
+                
+                self.printer.setChooseMacAddress(input)
                 self.insertText = False
                 self.update.setCanPrint(True)
+                    
             elif cmd == 127:    #CODE FOR BACKSPACE
                 self.printer.setChooseMacAddress("")
+                self.insertText = False
+                self.update.setCanPrint(True)
             
             if not self.insertText:
                 self.update.setCanPrint(True)
