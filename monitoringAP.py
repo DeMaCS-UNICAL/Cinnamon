@@ -129,13 +129,13 @@ if __name__ == "__main__":
             checkPrint = checkPrinter.CheckPrinter(4, "Thread4", 0.2, printer)
             checkPrint.start()
             
-            listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint)
-            listenerKey.start()
-            
             analyzePack = analyzePackage.AnalyzePackage(printer)
             
             update = updateDisplay.UpdateDisplay(3, "Thread3", 0.2, printer, analyzePack, checkPrint)
             update.start()
+            
+            listenerKey = listener.Listener(2, "Thread2", 2, printer, checkPrint, update)
+            listenerKey.start()
 
             sniff(offline=args.file, prn=analyzePack.sniffmgmt, stop_filter=stopperCheck, store=0)
             

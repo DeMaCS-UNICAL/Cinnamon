@@ -84,16 +84,24 @@ class Listener (threading.Thread):
                 
                 inp.addstr(1,2, "Please enter a MAC-address:")
                 input = inp.getstr(3, 2, 20)
+                #inp.refresh()
                 
                 while not self.printer.macAddressPresent(input) and input != "":
-                    inp.clear()
-                    inp.border()
+                    try:
+                        inp.clear()
+                        inp.border()
+                    
+                        inp.addstr(1,2, "Please enter a MAC-address:")
+                        inp.addstr(5,2, "MAC-address Wrong, try again")
+                        #inp.refresh()
+                        input = ""
+                        inp.addstr(5,2, "")
+                        input = inp.getstr(3, 2, 20)
+                    except Exception, e:
+                        self.fileLog = open("log.log", "a")
+                        self.fileLog.write(str(e))
+                        self.fileLog.close()
                 
-                    inp.addstr(1,2, "Please enter a MAC-address:")
-                    inp.addstr(5,2, "MAC-address Wrong, try again")
-                    input = ""
-                    inp.addstr(5,2, "")
-                    input = inp.getstr(3, 2, 20)
                 
                 self.printer.setChooseMacAddress(input)
                 self.insertText = False
