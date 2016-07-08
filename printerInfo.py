@@ -83,7 +83,7 @@ class PrinterInfo ():
         #t.close()
         #curses.resizeterm(55, 195)
         
-        #curses.curs_set(0)
+        curses.curs_set(0)
         
         curses.start_color()
         

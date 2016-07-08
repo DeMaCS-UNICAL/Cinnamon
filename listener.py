@@ -6,6 +6,9 @@ import updateDisplay
 import checkPrinter
 import curses.textpad
 
+import time
+from time import sleep
+
 class Listener (threading.Thread):
     
     def __init__(self, threadID, name, delay, printer, checkPrint, update):
@@ -79,8 +82,11 @@ class Listener (threading.Thread):
                 self.insertText = True
                 self.update.setCanPrint(False)
                 
+                sleep(0.1)
+                
                 inp = curses.newwin(7,50, 15,70)
                 inp.border()
+                curses.curs_set(1)
                 
                 inp.addstr(1,2, "Please enter a MAC-address:")
                 input = inp.getstr(3, 2, 20)
@@ -90,7 +96,7 @@ class Listener (threading.Thread):
                     try:
                         inp.clear()
                         inp.border()
-                    
+                        
                         inp.addstr(1,2, "Please enter a MAC-address:")
                         inp.addstr(5,2, "MAC-address Wrong, try again")
                         #inp.refresh()
@@ -108,6 +114,7 @@ class Listener (threading.Thread):
                 self.update.setCanPrint(True)
                     
             elif cmd == 127:    #CODE FOR BACKSPACE
+                curses.curs_set(0)
                 self.printer.setChooseMacAddress("")
                 self.insertText = False
                 self.update.setCanPrint(True)
