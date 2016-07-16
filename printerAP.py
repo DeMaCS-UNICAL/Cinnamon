@@ -1,14 +1,14 @@
  #!/usr/bin/python
 
 import curses, re
-import printerF
+import printerTable
 
 import texttable
 from texttable import Texttable
 
 
 
-class PrinterAP(printerF.Printer):
+class PrinterAP(printerTable.PrinterTable):
     
     CONSTANT = 191
     HEIGHT_TABLE = 25
@@ -21,7 +21,7 @@ class PrinterAP(printerF.Printer):
     
     
     def __init__(self, height):
-        printerF.Printer.__init__(self, height)
+        printerTable.PrinterTable.__init__(self, height)
         
         self.tableOrdAP = texttable.Texttable()
         self.tableOrdAP_2 = texttable.Texttable()

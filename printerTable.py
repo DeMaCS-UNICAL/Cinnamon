@@ -2,7 +2,7 @@
 
 import curses
 
-class Printer:
+class PrinterTable:
     
     HEIGHT_TABLE_CLIENT = 25
     

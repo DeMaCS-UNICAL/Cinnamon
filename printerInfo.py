@@ -3,7 +3,7 @@
 import sys, os, operator
 import threading, curses
 import texttable
-import printerF
+import printerTable
 import printerClient
 import printerAP
 import printerHelp

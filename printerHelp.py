@@ -3,24 +3,24 @@
 import curses, re
 import curses.textpad
 
-import printerF
+import printerTable
 
 import texttable
 from texttable import Texttable
 
 
-class PrinterHelp(printerF.Printer):
+class PrinterHelp(printerTable.PrinterTable):
     
     HEIGHT_TABLE = 25
     
     def __init__(self, height):
-        printerF.Printer.__init__(self, height) 
+        printerTable.PrinterTable.__init__(self, height) 
         
 
     def drawTable(self):
         #self.addTextBox()
         try:
-            self.src.addstr(0,0, "q = Exit   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info    - = Remove Info     f = Search", curses.color_pair(1))
+            self.src.addstr(0,0, "q = Exit   p = Pause   f = Search   Tab = Change Selected Table   r = Reverse Order Table   > = Order Table Next Column   < = Order Table Previous Column   + = Add Info   - = Remove Info", curses.color_pair(1))
         except Exception, e:
             self.fileLog = open("log.log", "a")
             self.fileLog.write(str(e))
