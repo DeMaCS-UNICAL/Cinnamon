@@ -28,7 +28,7 @@ class PrinterHelp(printerTable.PrinterTable):
         ##self.src.addstr(1,0, "> = Order Table Next Column\t< = Order Table Previous Column")
         
     def refreshTable(self):
-        self.src.refresh(0, 0, 50,0, 50,190)
+        self.src.refresh(0, 0, 45,0, 45,190)
         
     def resizeTable(self, height):
         self.height = height

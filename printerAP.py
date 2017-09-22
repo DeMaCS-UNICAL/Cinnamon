@@ -17,7 +17,7 @@ class PrinterAP(printerTable.PrinterTable):
     
     HEADER = [' ESSID'+" "*18,' BSSID'+" "*13, ' CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
-    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13, 'CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
+    HEADER_AP_TMP = [' ESSID'+" "*18,' BSSID'+" "*13, ' CH ', ' AUT ',' DEAUT ',' ASS_RQ ',' ASS_RP ',' DIS ',' HAND_S ',' HAND_F ',' PWR ',' CORR ',' CORR% ',' DATA ',' RTS  ',' CTS  ',' ACK ',' BEAC ', ' PROBE_PQ', ' PROBE_RP ', ' TOT_PACK']
     
     
     def __init__(self, height):
@@ -83,7 +83,7 @@ class PrinterAP(printerTable.PrinterTable):
         PrinterAP.HEADER[index] = PrinterAP.HEADER_AP_TMP[index]
 
     def refreshTable(self):
-        self.src.refresh(self.mypad_pos_ap, 0, 30,0, 50,190)
+        self.src.refresh(self.mypad_pos_ap, 0, 27,0, 35,190)
     
     def reset(self):
         self.tableOrdAP.reset()
