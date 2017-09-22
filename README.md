@@ -3,17 +3,42 @@ Application for real time monitoring of a wireless network, by capturing and ana
 
 ## Installation & Running
 
+If it's the first time you use the Cinnamon tool, you must first install external software used in implementation. So, you need to ensure to have installed:
+  - _Python_ (in this work we use 2.7 version)
+  - _Scapy_
+  - _Curses_
+
+
+
 Steps to run include:
   - Grab the code:
     - `git clone https://github.com/nananan/Cinnamon`
-    - `cd Cinnamon`
+    
+  - Run the script called _install.sh_ to run the installation of Python's external component used:
+    - `cd Cinnamon/Script`
+    - `chmod +x install.sh`
+    - `./install.sh`
     
   - Set wireless card into monitor mode: (this is possible in two modes)
-    1. You can set your interface in monitor mode:
+    - You can set your interface in monitor mode:
       - `ifconfig NAME_OF_WIRELESS_CARD down`
       - `iwconfig NAME_OF_WIRELESS_CARD mode monitor`
       - `ifconfig NAME_OF_WIRELESS_CARD up`
-    2. You can also add an interface in monitor mode
+    - **Or** you can add an interface in monitor mode
       - `iw dev NAME_OF_WIRELESS_CARD interface add NAME_OF_NEW_WIRELESS_CARD type monitor`
     
   - Once the card is in monitor mode:
+    - `sudo python monitoringAP.py -i NAME_OF_WIRELESS_CARD_IN_MONITOR_MODE`
+  
+  - To exit:
+    - `q`
+    
+Useful options include:
+  - `-h, --help` - Show the help message and exit.
+  - `-i INTERFACE, --interface INTERFACE` - Used to insert the interface to use for sniffing.
+  - `-f FILE, --file FILE` - Used to insert the file to read for offline sniffing
+  - `-b BSSID, --bssid BSSID` - Set a bssid
+  - `-c CHANNEL, --channel CHANNEL` - Set a channel
+  - `-s, --save` - To save the capture
+  - `-a, --analyze` - To print the analysis in two file (_DATA_AP.txt_ and _DATA_STATION.txt_) at the end of execution
+    
