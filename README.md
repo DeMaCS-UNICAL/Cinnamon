@@ -7,9 +7,7 @@ If it's the first time you use the Cinnamon tool, you must first install externa
   - _Python_ (in this work we use 2.7 version)
   - _Scapy_
   - _Curses_
-
-
-
+  
 Steps to run include:
   - Grab the code:
     - `git clone https://github.com/nananan/Cinnamon`
@@ -41,4 +39,11 @@ Useful options include:
   - `-c CHANNEL, --channel CHANNEL` - Set a channel
   - `-s, --save` - To save the capture
   - `-a, --analyze` - To print the analysis in two file (_DATA_AP.txt_ and _DATA_STATION.txt_) at the end of execution
-    
+   
+   
+## Interesting TODOs
+- Cleanup code
+- Develop the application for rooted Android smartphones
+
+## Other Informations
+This is a work of my thesis for the Bachelor's degree if you want more information you can read it at the following link:https://www.dropbox.com/s/aeob79ie94kb5b3/tesi.pdf?dl=0
