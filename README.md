@@ -46,4 +46,5 @@ Useful options include:
 - Develop the application for rooted Android smartphones
 
 ## Other Informations
-This is a work of my thesis for the Bachelor's degree if you want more information you can read it at the following link:https://www.dropbox.com/s/aeob79ie94kb5b3/tesi.pdf?dl=0
+This is a work of my thesis for the Bachelor's degree if you want more information you can read it at the following link:
+- https://www.dropbox.com/s/aeob79ie94kb5b3/tesi.pdf?dl=0
