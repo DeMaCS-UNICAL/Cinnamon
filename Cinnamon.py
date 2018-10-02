@@ -11,6 +11,8 @@ interface = ''
 bssid = None
 stopper = False
 
+monitor_enable  = 'ifconfig wlp3s0 down; iw dev wlp3s0 interface add wlp3s0_mon type monitor; ifconfig wlp3s0_mon up'
+monitor_disable = 'iw dev wlp3s0_mon del; ifconfig wlp3s0 up'
 
 def channel_hopper(channel):
 	# if (channel != None):
@@ -38,7 +40,8 @@ def signal_handler(signal, frame):
 	# p.join()
 	stopper = True
 
-	print "\n-=-=-=-=-=  END =-=-=-=-=-=-"
+	os.system(monitor_disable)
+	print("\n-=-=-=-=-=  END =-=-=-=-=-=-")
 	os._exit(0)
 
 def stopperCheck(p):
@@ -59,13 +62,18 @@ if __name__ == "__main__":
 	user = os.getenv("SUDO_USER")
 	
 	if user is None:
-		print "This program needs 'sudo'"
+		print("This program needs 'sudo'")
 	else:
-		print 'Press CTRL+c to stop sniffing...'
+		print('Press CTRL+c to stop sniffing...')
+
+		os.system(monitor_enable)
 
 		filterStr = ""
    		if args.channel != None:
+   			#os.system("systemctl stop networking")
+   			os.system("ifconfig %s down" % (args.interface))
 			os.system("iw dev %s set channel %d" % (args.interface, int(args.channel)))
+   			os.system("ifconfig %s up" % (args.interface))
 		
 		if args.bssid != None:
 			bssid = args.bssid
@@ -80,8 +88,8 @@ if __name__ == "__main__":
 			# if args.channel != None:
 			# 	p = Process(target = channel_hopper(args.channel))
 			# 	channel_set = True
-			print "-=-=-=-=-=-= cinnamon.py =-=-=-=-=-=-"
-			print "CH ENC BSSID			 SSID"
+			print("-=-=-=-=-=-= cinnamon.py =-=-=-=-=-=-")
+			print("CH ENC BSSID			 SSID")
 			#if channel_set == False:
 			# p = Process(target = channel_hopper(None))
 			# p.start()
@@ -92,6 +100,6 @@ if __name__ == "__main__":
 			else:
 				sniff(iface=args.interface, prn=sniffer.sniffAP, stop_filter=stopperCheck, store=0)
 
+
 			# sniff(iface=interface,prn=sniffAP)
-	
 

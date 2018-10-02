@@ -5,7 +5,7 @@ USE cinnamon;
 CREATE TABLE IF NOT EXISTS APs (
      access_point_name VARCHAR(150),
      access_point_address VARCHAR(30) PRIMARY KEY NOT NULL,
-     channel INT(2),
+     channel VARCHAR(5),
      type VARCHAR(50) NOT NULL,
      subtype VARCHAR(50) NOT NULL,
      strength VARCHAR(6),  

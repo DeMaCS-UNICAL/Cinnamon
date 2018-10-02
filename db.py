@@ -32,6 +32,15 @@ class DB_Manager:
 			self.db.rollback()
 
 
+	def update_channel_AP(self, channel, access_point_address):
+		cursor = self.db.cursor()
+		try:
+			cursor.execute("update APs set channel=? where access_point_address=?", channel, access_point_address)
+			self.db.commit()
+		except:
+			print("ROOOOOOLBACK")
+			self.db.rollback()
+
 	def exists_AP(self, mac_address):
 		cursor = self.db.cursor()
 		#sql = "select exists (select 1 from APs where access_point_address = ?)"
@@ -62,14 +71,17 @@ class DB_Manager:
 
 if __name__ == "__main__":
 	DB_Man = DB_Manager();
-	DB_Man.create_table();
+	# DB_Man.create_table();
 
 	record = {
 		'access_point_name': 'abababb',
-		'access_point_address': '1234'
+		'access_point_address': '1234',
+		'channel': '2'
 		}
 
 	DB_Man.insert_Ap(record)
+
+	# DB_Man.update_channel_AP('32','1234')
 
 	# disconnect from server
 	DB_Man.db.close()

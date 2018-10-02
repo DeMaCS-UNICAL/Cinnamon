@@ -18,7 +18,12 @@ class Sniffer:
 		if ( (p.haslayer(Dot11Beacon))):
 			ssid	   = p[Dot11Elt].info
 			bssid	  = p[Dot11].addr3	
-			channel	= int( ord(p[Dot11Elt:3].info))
+			channel = 'n/a'
+			# if len(p[Dot11Elt:3].info) == 1:
+			# print(p[Dot11Elt:3].ID)
+			if p[Dot11Elt:3].ID == 3:
+				# print("EEEEEEEEEEEEEEEEHI")
+				channel	= int( ord(p[Dot11Elt:3].info))
 			capability = p.sprintf("{Dot11Beacon:%Dot11Beacon.cap%}\
 					{Dot11ProbeResp:%Dot11ProbeResp.cap%}")
 
@@ -31,6 +36,8 @@ class Sniffer:
 			
 			if re.search("privacy", capability): enc = 'Y'
 			else: enc  = 'N'
+
+			#p.show()
 
 			record = OrderedDict([
 				('access_point_name', ssid),
@@ -47,7 +54,9 @@ class Sniffer:
 			else:
 				if signal_decoded > 0:
 					self.DB_Man.update_signal_AP(packet_signal, bssid)
-
+				if channel != 'n/a':
+					self.DB_Man.update_channel_AP(channel, bssid)
+					#TODO Magari se si verificano entrambe, fare solo un metodo
 		#print(type_packet[p[Dot11].type], " ",subtypes_management[p[Dot11].subtype])
 
 		#if p.haslayer(Dot11):
