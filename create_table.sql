@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS Waypoints (
      position_x FLOAT NOT NULL,
      position_y FLOAT NOT NULL,
      position_w FLOAT NOT NULL,
+     orientation_x FLOAT NOT NULL,
+     orientation_y FLOAT NOT NULL,
+     orientation_z FLOAT NOT NULL,
+     orientation_w FLOAT NOT NULL,
      AP VARCHAR(30) NULL
 ) ENGINE=InnoDB CHARSET=utf8;
 
