@@ -5,19 +5,11 @@ USE cinnamon;
 CREATE TABLE IF NOT EXISTS APs (
      access_point_name VARCHAR(150),
      access_point_address VARCHAR(30) PRIMARY KEY NOT NULL,
-     channel INT(2),
+     channel VARCHAR(5),
      type VARCHAR(50) NOT NULL,
      subtype VARCHAR(50) NOT NULL,
      strength VARCHAR(6),  
      timestamp DATETIME
-) ENGINE=InnoDB CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS Waypoints (
-     id_waypoint INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-     position_x FLOAT NOT NULL,
-     position_y FLOAT NOT NULL,
-     position_w FLOAT NOT NULL,
-     AP VARCHAR(30) NULL
 ) ENGINE=InnoDB CHARSET=utf8;
 
 
