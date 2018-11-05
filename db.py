@@ -8,7 +8,7 @@ from collections import OrderedDict
 #db = MySQLdb.connect("localhost","root","root","TESTDB" )
 class DB_Manager:
 	
-	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PASSWORD=root;")
+	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=admin;")
 
 	def insert_Ap(self, record):
 		cursor = self.db.cursor()
@@ -94,11 +94,18 @@ if __name__ == "__main__":
     #])
 
 	#DB_Man.insert_Ap(record)
-	
-	record = OrderedDict([("position_x",12.3),("position_y",13.676767),("position_w",1283.4),("AP","TUTTO IN UNA LINEA CUCCIOLA PUPINA DOLCE")])
+	record = OrderedDict([("position_x",0.663352489471),("position_y",-0.315788865089),("position_w",1.0)])
 	print("INSERT")
 	print(record.values())
 	DB_Man.insert_Waypoint(record)
+
+	record = OrderedDict([("position_x",0.679643511772),("position_y",0.843429803848),("position_w",0.709432826353)])
+	print("INSERT")
+	print(record.values())
+	DB_Man.insert_Waypoint(record)
+
+
+
 
 	for item in DB_Man.select_Waypoints_AP("TUTTO IN UNA LINEA CUCCIOLA PU"):
 		print(item.AP)
