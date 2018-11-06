@@ -150,7 +150,7 @@ class PrinterInfo ():
                 self.indexCursorAP += 1
                 self.printerAP.setIndexCursor(self.indexCursorAP)
                     
-                if self.indexCursorAP > PrinterInfo.HEIGHT_TABLE_AP - 2:
+                if self.indexCursorAP > PrinterInfo.HEIGHT_TABLE_AP - 20:
                     self.mypad_pos_ap += 1
                     
             self.printerAP.setMyPadPos(self.mypad_pos_ap)

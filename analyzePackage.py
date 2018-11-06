@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import scapy
-import scapy_ex
+#import scapy_ex
 import os,sys
 import printerInfo
 
@@ -440,7 +440,11 @@ class AnalyzePackage:
         self.checkEssidClient(macAP, macClient)
         
         #d.close()
-        
+    
+    def setFrequency(self, p, addr1, addr2):
+        signal_decoded = ord(p.notdecoded[-2:-1])
+        packet_signal = -(256 - signal_decoded)
+        self.checkFrequence(addr1, addr2, packet_signal)
        
 
     def sniffmgmt(self,p):
@@ -475,50 +479,50 @@ class AnalyzePackage:
                         self.apPresent.insert(0,p.addr3)
                         #self.apPresent[p.addr3] = []
                     self.essid[p.addr3] = p.info
-                    self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
+                    self.setFrequency(p, p.addr3, p.addr2)
                 
                 if from_DS and not to_DS and p.addr3 != AnalyzePackage.BROADCAST_ADDR and p.addr1 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr3)
                     self.createArrayInfo(key, p.addr1)
-                    self.checkFrequence(key, p.addr1,p.dBm_AntSignal)
+                    self.setFrequency(p, key, p.addr1)
 
                 elif not from_DS and to_DS and p.addr2 != AnalyzePackage.BROADCAST_ADDR:
                     key = "%s" % (p.addr1)
                     if key in self.apPresent:
                         self.createArrayInfo(key, p.addr2)
-                        self.checkFrequence(key,p.addr2,p.dBm_AntSignal)
+                        self.setFrequency(p, key,p.addr2)
                 
                 if p.haslayer(EAP):
-                    if p["EAP":].code == 3: # -----------------------> SUCCESS
+                    if p[EAP].code == 3: # -----------------------> SUCCESS
                         if (p.addr2,p.addr1) not in self.eapHandshakeSuccess:
                             self.createArrayInfo(p.addr2, p.addr1)
                         if not from_DS and to_DS:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_SUCC)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         elif from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_SUCC)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                         elif not from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_SUCC)
-                            self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr3, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
 
                         return
-                    elif p["EAP":] == 4: # --------------------> FAILED
+                    elif p[EAP].code == 4: # --------------------> FAILED
                         if not from_DS and to_DS:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.HAND_FAIL)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         elif from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.HAND_FAIL)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                         elif not from_DS and not to_DS:
                             self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.HAND_FAIL)
-                            self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr3, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         
                         return
                 
@@ -528,35 +532,35 @@ class AnalyzePackage:
                         #self.apPresent[p.addr2] = []
                     if not from_DS and to_DS:
                         self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
-                        self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                        self.checkChannel(p.addr2, p.Channel)
+                        self.setFrequency(p, p.addr1, p.addr2)
+                        #self.checkChannel(p.addr2, p.Channel)
                         
                         self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.BEACON, False)
-                        self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr1, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                         
                     elif from_DS and not to_DS:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
-                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                        self.checkChannel(p.addr1, p.Channel)
+                        self.setFrequency(p, p.addr2, p.addr1)
+                        #self.checkChannel(p.addr1, p.Channel)
                         
                         self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.BEACON, False)
-                        self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr2, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                     elif not from_DS and not to_DS:
                         isDifferent = False
                         if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
                             if p.addr3 != p.addr2:
                                 isDifferent = True
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
-                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                                self.checkChannel(p.addr2, p.Channel)
+                                self.setFrequency(p, p.addr3, p.addr2)
+                                #self.checkChannel(p.addr2, p.Channel)
                             if not isDifferent:
                                 self.createArrayAndUpdateInfo(p.addr3, None, Message.BEACON)
                             else:
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.BEACON, False)
-                            self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr3, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                         
                     return
                 #elif hasattr(p, 'type') and p.type == 2 and hasattr(p, 'subtype') and p.subtype == 0:   #DATA
@@ -566,45 +570,45 @@ class AnalyzePackage:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.DATA)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.DATA)
                         else:
                             if p.addr1 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.DATA, False)
-                        self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr1, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                     elif from_DS and not to_DS:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.DATA)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.DATA)
                         else:
                             if p.addr2 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.DATA, False)
-                        self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr2, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                     elif not from_DS and not to_DS:
                         if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
                             if p.addr3 != p.addr2:
                                 isDifferent = True
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.DATA)
-                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                                self.checkChannel(p.addr2, p.Channel)
+                                self.setFrequency(p, p.addr3, p.addr2)
+                                #self.checkChannel(p.addr2, p.Channel)
                                 
                             if not isDifferent:
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA)
-                                self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                                self.checkChannel(p.addr1, p.Channel)
+                                self.setFrequency(p, p.addr3, p.addr1)
+                                #self.checkChannel(p.addr1, p.Channel)
                             else:
                                 if p.addr1 != p.addr3:
                                     self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.DATA, False)
-                                    self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                                    self.checkChannel(p.addr1, p.Channel)
+                                    self.setFrequency(p, p.addr3, p.addr1)
+                                    #self.checkChannel(p.addr1, p.Channel)
                         
                     return
                         
@@ -616,8 +620,8 @@ class AnalyzePackage:
                         macClient = p.addr2
                     
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.RTS)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)
+                    #self.checkChannel(macClient, p.Channel)
                 
                     return
                 elif hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 12:   #CTS
@@ -625,12 +629,12 @@ class AnalyzePackage:
                     if p.addr1 != None:
                         if p.addr1 in self.apPresent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.CTS)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         else:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.CTS)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                     
                     return
                 elif hasattr(p, 'type') and p.type == 1 and hasattr(p, 'subtype') and p.subtype == 13:   #ACK
@@ -638,12 +642,12 @@ class AnalyzePackage:
                     if p.addr1 != None:
                         if p.addr1 in self.apPresent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.ACK)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         else:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.ACK)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                     
                     return
                 
@@ -661,8 +665,8 @@ class AnalyzePackage:
                             macClient = p.addr2
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.AUTH)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)                
+                    #self.checkChannel(macClient, p.Channel)
                     
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 0:   #ASSOC_REQ
@@ -670,8 +674,8 @@ class AnalyzePackage:
                     macClient = p.addr2
 
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_REQ)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)
+                    #self.checkChannel(macClient, p.Channel)
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 1:   #ASSOC_RESP
@@ -679,8 +683,8 @@ class AnalyzePackage:
                     macClient = p.addr2
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.DISASSOC)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)                
+                    #self.checkChannel(macClient, p.Channel)
 
                     return
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 10:   #DISASSOC
@@ -692,8 +696,8 @@ class AnalyzePackage:
                         macClient = p.addr1
                         
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.ASSOC_RESP)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)                
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)                
+                    #self.checkChannel(macClient, p.Channel)
 
                     return
                         
@@ -706,8 +710,8 @@ class AnalyzePackage:
                         macClient = p.addr1
                             
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.DEAUTH)
-                    self.checkFrequence(macAP, macClient,p.dBm_AntSignal)
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP, macClient)
+                    #self.checkChannel(macClient, p.Channel)
                     return
                         
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 4:   #PROBE_REQ
@@ -721,16 +725,16 @@ class AnalyzePackage:
                     self.probeRequest[(p.info,macClient)] += 1
                     
                     self.createArrayAndUpdateInfo(macAP, macClient, Message.PROBE_REQ)
-                    self.checkFrequence(macAP,macClient,p.dBm_AntSignal)
-                    self.checkChannel(macClient, p.Channel)
+                    self.setFrequency(p, macAP,macClient)
+                    #self.checkChannel(macClient, p.Channel)
                     
                     return
                 
                 elif hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 5:   #PROBE_RESP
                     if p.addr2 != None:
                         self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.PROBE_RESP)
-                        self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                        self.checkChannel(p.addr1, p.Channel)
+                        self.setFrequency(p, p.addr2, p.addr1)
+                        #self.checkChannel(p.addr1, p.Channel)
                     return
                 else:
                     isDifferent = False
@@ -738,47 +742,47 @@ class AnalyzePackage:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.OTHER)
-                            self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                            self.checkChannel(p.addr2, p.Channel)
+                            self.setFrequency(p, p.addr1, p.addr2)
+                            #self.checkChannel(p.addr2, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.OTHER)
                         else:
                             if p.addr1 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.OTHER, False)
-                        self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr1, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                 
                     elif from_DS and not to_DS:
                         if p.addr1 != p.addr2:
                             isDifferent = True
                             self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.OTHER)
-                            self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr2, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                         if not isDifferent:
                             self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.OTHER)
                         else:
                             if p.addr2 != p.addr3:
                                 self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.OTHER, False)
-                        self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
-                        self.checkChannel(p.addr3, p.Channel)
+                        self.setFrequency(p, p.addr2, p.addr3)
+                        #self.checkChannel(p.addr3, p.Channel)
                     
                     elif not from_DS and not to_DS:
                         if hasattr(p, 'addr2') and hasattr(p, 'addr3'):
                             if p.addr3 != p.addr2:
                                 isDifferent = True
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.OTHER)
-                                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                                self.checkChannel(p.addr2, p.Channel)
+                                self.setFrequency(p, p.addr3, p.addr2)
+                                #self.checkChannel(p.addr2, p.Channel)
                             if not isDifferent:
                                 self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER)
                             else:
                                 if p.addr1 != p.addr3:
                                     self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.OTHER, False)
-                            self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                            self.checkChannel(p.addr1, p.Channel)
+                            self.setFrequency(p, p.addr3, p.addr1)
+                            #self.checkChannel(p.addr1, p.Channel)
                     
-                    if hasattr(p, 'addr2') and hasattr(p, 'addr3') and hasattr(p, 'addr1') and hasattr(p, 'type') and hasattr(p, 'subtype'):
-                        self.fileLog = open(self.titleLog, "a")
+                    """if hasattr(p, 'addr2') and hasattr(p, 'addr3') and hasattr(p, 'addr1') and hasattr(p, 'type') and hasattr(p, 'subtype'):
+                        self.fileLog = open(self.titleLog, "w")
                         self.fileLog.write("TYPE - SUBTYPE: ")
                         self.fileLog.write(str(p.type)+ " " + str(p.subtype)+"\n")
                         self.fileLog.write("ADDRESS: ")
@@ -786,7 +790,7 @@ class AnalyzePackage:
                         self.fileLog.write("FROM_DS - TO_DS: ")
                         self.fileLog.write(str(from_DS)+ " "+ str(to_DS))
                         self.fileLog.write("\n------------------------------------------------------------------\n\n")
-                        self.fileLog.close()
+                        self.fileLog.close()"""
                 
         else:
             if p.haslayer(Dot11) and hasattr(p, 'info'):
@@ -797,8 +801,8 @@ class AnalyzePackage:
                     #self.apPresent[p.addr3] = []
                 self.essid[p.addr3] = p.info
                 self.createArrayAndUpdateInfo(p.addr3, "", Message.NUM_PACK)
-                self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                self.checkChannel(p.addr2, p.Channel)
+                self.setFrequency(p, p.addr3, p.addr2)
+                #self.checkChannel(p.addr2, p.Channel)
                 self.contForAP += 1
             
             if hasattr(p, 'type') and p.type == 0 and hasattr(p, 'subtype') and p.subtype == 8:   #BEACON
@@ -807,35 +811,35 @@ class AnalyzePackage:
                     #self.apPresent[p.addr2] = []
                 if not from_DS and to_DS:
                     self.createArrayAndUpdateInfo(p.addr1, p.addr2, Message.BEACON)
-                    self.checkFrequence(p.addr1, p.addr2,p.dBm_AntSignal)
-                    self.checkChannel(p.addr2, p.Channel)
+                    self.setFrequency(p, p.addr1, p.addr2)
+                    #self.checkChannel(p.addr2, p.Channel)
                     
                     self.createArrayAndUpdateInfo(p.addr1, p.addr3, Message.BEACON, False)
-                    self.checkFrequence(p.addr1, p.addr3,p.dBm_AntSignal)
-                    self.checkChannel(p.addr3, p.Channel)
+                    self.setFrequency(p, p.addr1, p.addr3)
+                    #self.checkChannel(p.addr3, p.Channel)
                     
                 elif from_DS and not to_DS:
                     self.createArrayAndUpdateInfo(p.addr2, p.addr1, Message.BEACON)
-                    self.checkFrequence(p.addr2, p.addr1,p.dBm_AntSignal)
-                    self.checkChannel(p.addr1, p.Channel)
+                    self.setFrequency(p, p.addr2, p.addr1)
+                    #self.checkChannel(p.addr1, p.Channel)
                     
                     self.createArrayAndUpdateInfo(p.addr2, p.addr3, Message.BEACON, False)
-                    self.checkFrequence(p.addr2, p.addr3,p.dBm_AntSignal)
-                    self.checkChannel(p.addr3, p.Channel)
+                    self.setFrequency(p, p.addr2, p.addr3)
+                    #self.checkChannel(p.addr3, p.Channel)
                 elif not from_DS and not to_DS:
                     isDifferent = False
                     if p.addr3 != p.addr2:
                         isDifferent = True
                         self.createArrayAndUpdateInfo(p.addr3, p.addr2, Message.BEACON)
-                        self.checkFrequence(p.addr3, p.addr2,p.dBm_AntSignal)
-                        self.checkChannel(p.addr2, p.Channel)
+                        self.setFrequency(p, p.addr3, p.addr2)
+                        #self.checkChannel(p.addr2, p.Channel)
                         
                     if not isDifferent:
                         self.createArrayAndUpdateInfo(p.addr3, None, Message.BEACON)
                     else:
                         self.createArrayAndUpdateInfo(p.addr3, p.addr1, Message.BEACON, False)
-                    self.checkFrequence(p.addr3, p.addr1,p.dBm_AntSignal)
-                    self.checkChannel(p.addr1, p.Channel)
+                    self.setFrequency(p, p.addr3, p.addr1)
+                    #self.checkChannel(p.addr1, p.Channel)
                     
                 self.contForAP += 1
                 return

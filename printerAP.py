@@ -83,7 +83,7 @@ class PrinterAP(printerTable.PrinterTable):
         PrinterAP.HEADER[index] = PrinterAP.HEADER_AP_TMP[index]
 
     def refreshTable(self):
-        self.src.refresh(self.mypad_pos_ap, 0, 27,0, 35,190)
+        self.src.refresh(self.mypad_pos_ap, 0, 27,0, 35, 190)
     
     def reset(self):
         self.tableOrdAP.reset()
