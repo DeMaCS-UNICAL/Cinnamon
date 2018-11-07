@@ -1,23 +1,27 @@
 #!/usr/bin/python
 
+import rospy
 from scapy.all import *
 
 import time, datetime
+from nav_msgs.msg import Odometry
 
 from collections import OrderedDict
 import imp
-db_man = imp.load_source('DB_Manager', '/home/eliana/git/Cinnamon/db.py')
-enum_man = imp.load_source('DB_Manager', '/home/eliana/git/Cinnamon/Enum_Type.py')
+db_man = imp.load_source('DB_Manager', '/home/wallf/git/Cinnamon/db.py')
+enum_man = imp.load_source('DB_Manager', '/home/wallf/git/Cinnamon/Enum_Type.py')
 #from Enum_Type import Enum_Type
 
 
 class Sniffer:
 	def __init__(self):
+		#rospy.init_node('sniffer', anonymous=False)
+		#rospy.loginfo("Started ")
 		self.DB_Man = db_man.DB_Manager()
-		# self.pose_subscriber = rospy.Subscriber('move_base', PoseStamped, self.pose_callback)
+		self.pose_subscriber = rospy.Subscriber('odom', Odometry, self.pose_callback)
 	
 	def pose_callback(self, pose):
-		#print(goal_pose)
+		#print(pose)
 		self.pose = pose
 		#.pose.position
 		#orientation = pose.pose.orientation

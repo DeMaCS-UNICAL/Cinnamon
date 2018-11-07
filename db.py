@@ -8,7 +8,7 @@ from collections import OrderedDict
 #db = MySQLdb.connect("localhost","root","root","TESTDB" )
 class DB_Manager:
 	
-	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PWD=root")
+	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=admin;")# PWD=root")
 
 	def insert_Ap(self, record):
 		cursor = self.db.cursor()
