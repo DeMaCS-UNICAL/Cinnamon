@@ -11,8 +11,8 @@ interface = ''
 bssid = None
 stopper = False
 
-monitor_enable  = 'ifconfig wlp3s0 down; iw dev wlp3s0 interface add wlp3s0_mon type monitor; ifconfig wlp3s0_mon up'
-monitor_disable = 'iw dev wlp3s0_mon del; ifconfig wlp3s0 up'
+monitor_enable  = 'ifconfig wlp2s0 down; iw dev wlp2s0 interface add wlp2s0_mon type monitor; ifconfig wlp2s0_mon up'
+monitor_disable = 'iw dev wlp2s0_mon del; ifconfig wlp2s0 up'
 
 def channel_hopper(channel):
 	# if (channel != None):

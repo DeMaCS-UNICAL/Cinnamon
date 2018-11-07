@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Waypoints (
      id_waypoint INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
      position_x FLOAT NOT NULL,
      position_y FLOAT NOT NULL,
-     position_w FLOAT NOT NULL,
+     position_z FLOAT NOT NULL,
      orientation_x FLOAT NOT NULL,
      orientation_y FLOAT NOT NULL,
      orientation_z FLOAT NOT NULL,
