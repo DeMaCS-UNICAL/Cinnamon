@@ -8,7 +8,7 @@ from collections import OrderedDict
 #db = MySQLdb.connect("localhost","root","root","TESTDB" )
 class DB_Manager:
 	
-	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=admin;")
+	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PWD=root")
 
 	def insert_Ap(self, record):
 		cursor = self.db.cursor()
@@ -27,6 +27,15 @@ class DB_Manager:
 		cursor = self.db.cursor()
 		try:
 			cursor.execute("update APs set strength=? where access_point_address=?", strength, access_point_address)
+			self.db.commit()
+		except:
+			print("ROOOOOOLBACK")
+			self.db.rollback()
+
+	def update_channel_AP(self, channel, access_point_address):
+		cursor = self.db.cursor()
+		try:
+			cursor.execute("update APs set channel=? where access_point_address=?", channel, access_point_address)
 			self.db.commit()
 		except:
 			print("ROOOOOOLBACK")
@@ -51,8 +60,21 @@ class DB_Manager:
 	def select_Waypoints_AP(self, mac_address):
 		cursor = self.db.cursor()
 		sql = "select * from Waypoints where AP = ?"
-		waypoints_list = cursor.execute(sql, mac_address)
-		return waypoints_list
+		waypoint = cursor.execute(sql, mac_address)
+		return waypoint
+
+	def update_Waypoint_AP(self, record, access_point_address):
+		cursor = self.db.cursor()
+		try:
+			record_string = "".join(key[0]+"= "+str(key[1])+"," for key in record)[:-1]
+			# record_string = "("+"".join(key+"= "+record[key]+"," for key in record)[:-1]+")"
+			#values_string = "("+"".join("?," for key in record)[:-1]+")"
+			values = [record[key] for key in record]
+			cursor.execute("update Waypoints set "+ record_string + " where AP=?" + access_point_address)
+			self.db.commit()
+		except:
+			print("ROOOOOOLBACK")
+			self.db.rollback()
 
 	def insert_Waypoint(self, record):
 		cursor = self.db.cursor()
