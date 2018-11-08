@@ -29,7 +29,7 @@ class DB_Manager:
 			cursor.execute("update APs set strength=? where access_point_address=?", strength, access_point_address)
 			self.db.commit()
 		except:
-			print("ROOOOOOLBACK")
+			print("ROOOOOOLBACK SIGNAL AP")
 			self.db.rollback()
 
 	def update_channel_AP(self, channel, access_point_address):
@@ -38,7 +38,7 @@ class DB_Manager:
 			cursor.execute("update APs set channel=? where access_point_address=?", channel, access_point_address)
 			self.db.commit()
 		except:
-			print("ROOOOOOLBACK")
+			print("ROOOOOOLBACK CHANNEL")
 			self.db.rollback()
 
 	def exists_AP(self, mac_address):
@@ -66,14 +66,12 @@ class DB_Manager:
 	def update_Waypoint_AP(self, record, access_point_address):
 		cursor = self.db.cursor()
 		try:
-			record_string = "".join(key[0]+"= "+str(key[1])+"," for key in record)[:-1]
-			# record_string = "("+"".join(key+"= "+record[key]+"," for key in record)[:-1]+")"
-			#values_string = "("+"".join("?," for key in record)[:-1]+")"
-			values = [record[key] for key in record]
-			cursor.execute("update Waypoints set "+ record_string + " where AP=?" + access_point_address)
+			record_string = "".join(key[0]+"= %f, " % (key[1]) for key in record)[:-2]
+			sql = "update Waypoints set "+ record_string + " where AP=?"
+			cursor.execute(sql, access_point_address)
 			self.db.commit()
 		except:
-			print("ROOOOOOLBACK")
+			print("ROOOOOOLBACK UPDATE WAYPOINT")
 			self.db.rollback()
 
 	def insert_Waypoint(self, record):

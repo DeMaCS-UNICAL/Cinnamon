@@ -18,11 +18,12 @@ class Sniffer:
 		#rospy.init_node('sniffer', anonymous=False)
 		#rospy.loginfo("Started ")
 		self.DB_Man = db_man.DB_Manager()
+		self.odom=None
 		self.pose_subscriber = rospy.Subscriber('odom', Odometry, self.pose_callback)
 	
-	def pose_callback(self, pose):
+	def pose_callback(self, odom):
 		#print(pose)
-		self.pose = pose
+		self.odom = odom
 		#.pose.position
 		#orientation = pose.pose.orientation
 
@@ -33,7 +34,7 @@ class Sniffer:
 
 	def sniffAP(self, p):
 		timestamp = datetime.datetime.now().isoformat()
-
+		record_waypoint = None
 		if ((p.haslayer(Dot11Beacon))):
 			ssid	   = p[Dot11Elt].info
 			bssid	  = p[Dot11].addr3	
@@ -49,7 +50,7 @@ class Sniffer:
 			type_ = enum_man.Enum_Type.type_packet[p[Dot11].type]
 			subtype = enum_man.Enum_Type.subtypes_management[p[Dot11].subtype]
 
-			signal_decoded = ord(p.notdecoded[-2:-1])
+			signal_decoded = ord(p.notdecoded[-4:-3])
 			#info = p.sprintf("802.11 %Dot11.type% %Dot11.subtype% %RadioTap.dBm_AntSignal% %Dot11.pw-mgt% %Dot11.addr2% > %Dot11.addr1%")
 			packet_signal = -(256 - signal_decoded)
 			
@@ -67,30 +68,35 @@ class Sniffer:
 				('strength', packet_signal),
 				('timestamp', timestamp)
 			])
-			record_waypoint = OrderedDict([
-				("position_x", 1),#self.pose.pose.x),
-				("position_y", 1),#self.pose.pose.y),
-				("position_z", 1),#self.pose.pose.z),
-				("orientation_x", 1),#self.pose.orientation.x),
-				("orientation_y", 1),#self.pose.orientation.y),
-				("orientation_z", 1),#self.pose.orientation.z),
-				("orientation_w", 1),#self.pose.orientation.w),
-				("AP", bssid)
-			])
-			pose_list = list(record_waypoint.items())[:6]
-			record_string = "".join(key[0]+"= "+str(key[1])+"," for key in pose_list)[:-1]
-			print("update Waypoints set "+ record_string+" where AP=? "+ bssid)
+			if self.odom is not None:
+				record_waypoint = OrderedDict([
+					("position_x", self.odom.pose.pose.position.x),
+					("position_y", self.odom.pose.pose.position.y),
+					("position_z", self.odom.pose.pose.position.z),
+					("orientation_x", self.odom.pose.pose.orientation.x),
+					("orientation_y", self.odom.pose.pose.orientation.y),
+					("orientation_z", self.odom.pose.pose.orientation.z),
+					("orientation_w", self.odom.pose.pose.orientation.w),
+					("AP", bssid)
+				])
+			#pose_list = list(record_waypoint.items())[:6]
+			#record_string = "".join(key[0]+"= "+str(key[1])+"," for key in pose_list)[:-1]
 			
 			
 
 			if not self.DB_Man.exists_AP(bssid):
 				self.DB_Man.insert_Ap(record)
-				# self.DB_Man.insert_Waypoint(record_waypoint)
+				if self.odom is not None:
+					self.DB_Man.insert_Waypoint(record_waypoint)
+				print("--> INSERT Waypoints set ",record_waypoint," where AP=? ",bssid)
 			else:
+				#print("SIGNAL: ", signal_decoded)
 				if signal_decoded > 0:
 					self.DB_Man.update_signal_AP(packet_signal, bssid)
-					# pose_list = list(record_waypoint.items())[:6]
-					# self.DB_Man.update_update_Waypoint_AP(pose_list, bssid)
+					if self.odom is not None and record_waypoint is not None:
+						pose_list = list(record_waypoint.items())[:7]
+						self.DB_Man.update_Waypoint_AP(pose_list, bssid)
+						#print("UPDATE Waypoints set ",pose_list," where AP=? ",bssid)
 				if channel != 'n/a':
 					self.DB_Man.update_channel_AP(channel, bssid)
 					#TODO Magari se si verificano entrambe, fare solo un metodo
@@ -111,7 +117,7 @@ class Sniffer:
 		#print(p[Dot11].subtype)
 		subtype = enum_man.Enum_Type.subtypes_management[p[Dot11].subtype]
 		signal_decoded = None
-		signal_decoded = ord(p.notdecoded[-2:-1]) if hasattr(p, 'notdecoded') else 'n/a'
+		signal_decoded = ord(p.notdecoded[-4:-3]) if hasattr(p, 'notdecoded') else 'n/a'
 		#info = p.sprintf("802.11 %Dot11.type% %Dot11.subtype% %RadioTap.dBm_AntSignal% %Dot11.pw-mgt% %Dot11.addr2% > %Dot11.addr1%")
 		packet_signal = -(256 - signal_decoded) if signal_decoded != None else 'n/a'
 
