@@ -8,7 +8,7 @@ from collections import OrderedDict
 #db = MySQLdb.connect("localhost","root","root","TESTDB" )
 class DB_Manager:
 	
-	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=admin;")# PWD=root")
+	db = pyodbc.connect("DRIVER={myodbc_mysql}; SERVER=localhost; PORT=3306;DATABASE=cinnamon; UID=root; PWD=root")
 
 	def insert_Ap(self, record):
 		cursor = self.db.cursor()
@@ -51,6 +51,16 @@ class DB_Manager:
 			return True
 		return False
 
+	def exists_Waypoint_AP(self, mac_address, strength):
+		cursor = self.db.cursor()
+		#sql = "select exists (select 1 from APs where access_point_address = ?)"
+		sql = "select * from Waypoints_AP where AP = ? and strength = ?"
+		count = cursor.execute(sql, mac_address, strength).rowcount
+		#print("MAC: ", mac_address, " ", count)
+		if count > 0:
+			return True
+		return False
+
 	def select_Waypoints(self):
 		cursor = self.db.cursor()
 		sql = "select * from Waypoints where AP is NULL"
@@ -74,6 +84,7 @@ class DB_Manager:
 			print("ROOOOOOLBACK UPDATE WAYPOINT")
 			self.db.rollback()
 
+
 	def insert_Waypoint(self, record):
 		cursor = self.db.cursor()
 		try:			
@@ -81,6 +92,18 @@ class DB_Manager:
 			values_string = "("+"".join("?," for key in record)[:-1]+")"
 			values = [record[key] for key in record]
 			cursor.execute("insert into Waypoints "+record_string+" values "+values_string, values)
+			self.db.commit()
+		except Exception as e:
+			print(e)
+			self.db.rollback()
+
+	def insert_Waypoint_AP(self, record):
+		cursor = self.db.cursor()
+		try:			
+			record_string = "("+"".join(key+"," for key in record)[:-1]+")"
+			values_string = "("+"".join("?," for key in record)[:-1]+")"
+			values = [record[key] for key in record]
+			cursor.execute("insert into Waypoints_AP "+record_string+" values "+values_string, values)
 			self.db.commit()
 		except Exception as e:
 			print(e)
@@ -95,7 +118,7 @@ class DB_Manager:
 			self.db.rollback()
 
 	def insert_EAP(self, record):
-		cursor = self7.db.cursor()
+		cursor = self.db.cursor()
 		try:
 			cursor.execute("insert into EAP values (?,?,?,?,?,?,?,?,?,?,?)", record.values())
 			self.db.commit()

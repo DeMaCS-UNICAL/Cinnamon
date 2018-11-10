@@ -20,8 +20,20 @@ CREATE TABLE IF NOT EXISTS Waypoints (
      orientation_x FLOAT NOT NULL,
      orientation_y FLOAT NOT NULL,
      orientation_z FLOAT NOT NULL,
+     orientation_w FLOAT NOT NULL
+) ENGINE=InnoDB CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS Waypoints_AP (
+     id_waypoint INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+     position_x FLOAT NOT NULL,
+     position_y FLOAT NOT NULL,
+     position_z FLOAT NOT NULL,
+     orientation_x FLOAT NOT NULL,
+     orientation_y FLOAT NOT NULL,
+     orientation_z FLOAT NOT NULL,
      orientation_w FLOAT NOT NULL,
-     AP VARCHAR(30) NULL
+     AP VARCHAR(30) NOT NULL,
+     strength VARCHAR(6) NOT NULL
 ) ENGINE=InnoDB CHARSET=utf8;
 
 
