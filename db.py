@@ -22,6 +22,9 @@ class DB_Manager:
 		except:
 			self.db.rollback()
 
+	def select_APs(self):
+		cursor = self.db.cursor()
+		return cursor.execute("SELECT access_point_address FROM APs")
 
 	def update_signal_AP(self, strength, access_point_address):
 		cursor = self.db.cursor()
@@ -69,7 +72,7 @@ class DB_Manager:
 	
 	def select_Waypoints_AP(self, mac_address):
 		cursor = self.db.cursor()
-		sql = "select * from Waypoints where AP = ?"
+		sql = "select * from Waypoints_AP where AP = ?"
 		waypoint = cursor.execute(sql, mac_address)
 		return waypoint
 
