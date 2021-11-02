@@ -22,7 +22,7 @@ Steps to run include:
  ## Virtual Environment setup
  The following steps are used to install *conda* and launch the virtual environment.
  - Install **conda** for **Python version 2.0**
- - Launch the command `conda env create -f envinnamon.yml` needed to install all the dependencies
+ - Launch the command `conda env create -f envinnamon.yml python=2.7` needed to install all the dependencies
  - Launch the command `conda activate envinnamon`
  
 
