@@ -27,7 +27,7 @@ Steps to run include:
  
 
  ## Running
-To run the tool, you need to create an interface in monitor mode (or alternatively, you can convert the interface already existed in monitor mode).
+To run the tool, you need to create an interface in monitor mode (or alternatively, you can set an existing interface in monitor mode).
 In the following step, we explain how create the interface:
   - Set wireless card into monitor mode: (this is possible in two modes)
     - You can set your interface in monitor mode:
