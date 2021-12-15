@@ -40,7 +40,7 @@ In the following step, we explain how create the interface:
   Now, you can execute the tool by launch the command:
   - `sudo python monitoringAP.py -i NAME_OF_WIRELESS_CARD_IN_MONITOR_MODE`
   
-  (**N.B: The console in which you run the tool must be in full screen**)
+  (**N.B: The console in which you run the tool must be in full screen and allow for a lot of columns, or you'd get ncurses errors**)
   
   - To exit:
     - `q`
